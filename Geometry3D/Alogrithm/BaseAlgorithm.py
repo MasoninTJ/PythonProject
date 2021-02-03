@@ -1,5 +1,3 @@
-import sys
-
 from Class3D import *
 import ConstMember
 from Alogrithm import BaseTransfer
@@ -55,26 +53,27 @@ def intersection_ray_and_triangle(m_ray: Ray3D, m_triangle: Triangle) -> (Point3
         return None
     q = cross(s, vec_ab)
     v = f * dot(m_ray.direction, q)
-    if (v < 0 or u + v > 1):  # 点在三角形外
+    if v < 0 or u + v > 1:  # 点在三角形外
         return None
 
     t = f * np.dot(vec_ac, q)
     return m_ray.get_point_from_t(t)
 
 
-def create_plane_from_3point(m_point1, m_point2, m_point3):
+def create_plane_from_3point(m_point1: Point3D, m_point2: Point3D, m_point3: Point3D) -> (Plane, None):
     """
     通过三个点构造面，计算平面的法向量,用点法式构造平面
     """
-    x_vector1 = m_point1 - m_point2
-    x_vector2 = m_point1 - m_point3
-    return Plane(m_point1, cross(x_vector1, x_vector2))
+    m_vec1 = m_point2 - m_point1
+    m_vec2 = m_point3 - m_point1
+    m_normal = cross(m_vec1, m_vec2)
+    if m_normal.is_valid():  # 叉乘结果全是0时三点共线
+        return Plane(m_point1, m_normal)
+    else:
+        return None
 
 
-def rotate(m_matrix, geometry, m_center=Point3D()):
-    pass
-
-def vector_rotate(m_vector,m_matrix):
+def vector_rotate(m_vector, m_matrix):
     new_point_array = np.dot(m_matrix, m_vector.to_array())
     return Vector3D(*new_point_array)
 
@@ -139,10 +138,6 @@ def model_rotate(x_model, x_matrix, x_center=Point3D(0, 0, 0)):
     return STLModel(triangle_list)
 
 
-def is_point_in_triangle_3d(x_point, x_triangle):
-    pass
-
-
 def is_point_in_triangle_2d(x_point, x_triangle_2d):
     """
     判断平面上的点是否在三角形内
@@ -174,7 +169,7 @@ def is_point_in_triangle_2d(x_point, x_triangle_2d):
         return False
 
 
-def get_rotate_matrix_from_two_vector(x_vector_old :Vector3D, x_vector_new :Vector3D):
+def get_rotate_matrix_from_two_vector(x_vector_old: Vector3D, x_vector_new: Vector3D):
     """
     已知旋转前后的两个向量，计算该旋转矩阵
     使用罗德里格斯变换，通过余弦公式计算旋转角度，通过向量叉乘计算旋转轴
@@ -264,9 +259,6 @@ def get_average_center(x_list_of_point):
         sum_point += x_point
     count = len(x_list_of_point)
     return Point3D(sum_point.x / count, sum_point.y / count, sum_point.z / count)
-
-
-
 
 
 def is_point_equal(x_point_1, x_point_2):

@@ -232,6 +232,9 @@ class Vector3D:
         length = self.length()
         return self / length
 
+    def is_valid(self):
+        return self.to_array().all()
+
 
 class Line2D:
     def __init__(self, m_begin_point=Point2D(0, 0), m_end_point=Point2D(0, 0)):
