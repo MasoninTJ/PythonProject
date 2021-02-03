@@ -305,6 +305,20 @@ class Triangle:
         return f'vertex1:{self.vertex1}, vertex2:{self.vertex2}, vertex3:{self.vertex3}'
 
 
+class Mesh:
+    def __init__(self, m_normal: Vector3D, m_vertex: Triangle):
+        self.normal = m_normal
+        self.vertex = m_vertex
+
+    def __str__(self):
+        return f'normal:{self.normal},vertex:{self.vertex}'
+
+
+class STLModel:
+    def __init__(self, m_mesh_list):
+        self.mesh_list = m_mesh_list
+
+
 class Ray2D:
     def __init__(self, m_origin: Point2D, m_direction: Point2D):
         self.origin = m_origin
@@ -322,9 +336,8 @@ class Ray3D:
     def __str__(self):
         return f'origin:{self.origin},direction:{self.direction}'
 
-    def get_point_from_t(self,t):
+    def get_point_from_t(self, t):
         if t > 0:
             return self.origin + self.direction * t
         else:
             return None
-
