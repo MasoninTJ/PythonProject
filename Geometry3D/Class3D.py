@@ -158,7 +158,7 @@ class Point3D:
 
 
 class Vector3D:
-    def __init__(self, mi=0.0, mj=0.0, mk=0.0):
+    def __init__(self, mi=0.0, mj=0.0, mk=1.0):
         self.i = mi
         self.j = mj
         self.k = mk
@@ -278,12 +278,12 @@ class Line3D:
 
 
 class Plane:
-    def __init__(self, m_origin=Point3D(0, 0, 0), m_vector=Vector3D(0, 0, 1)):
-        self.origin = deepcopy(m_origin)
-        self.vector = deepcopy(m_vector.normalize())
+    def __init__(self, m_point=Point3D(0, 0, 0), m_vector=Vector3D(0, 0, 1)):
+        self.point = deepcopy(m_point)
+        self.normal = deepcopy(m_vector.normalize())
 
     def __str__(self):
-        return f'origin:{self.origin},vector:{self.vector}'
+        return f'point:{self.point},normal:{self.normal}'
 
 
 class Sphere:
@@ -296,10 +296,28 @@ class Sphere:
 
 
 class Triangle:
-    def __init__(self, m_vertex1=Point3D(), m_vertex2=Point3D(),m_vertex3=Point3D):
+    def __init__(self, m_vertex1=Point3D(), m_vertex2=Point3D(), m_vertex3=Point3D()):
         self.vertex1 = m_vertex1
         self.vertex2 = m_vertex2
         self.vertex3 = m_vertex3
 
     def __str__(self):
         return f'vertex1:{self.vertex1}, vertex2:{self.vertex2}, vertex3:{self.vertex3}'
+
+
+class Ray2D:
+    def __init__(self, m_origin: Point2D, m_direction: Point2D):
+        self.origin = m_origin
+        self.direction = m_direction
+
+    def __str__(self):
+        return f'origin:{self.origin},direction:{self.direction}'
+
+
+class Ray3D:
+    def __init__(self, m_origin: Point3D, m_direction: Point3D):
+        self.origin = m_origin
+        self.direction = m_direction
+
+    def __str__(self):
+        return f'origin:{self.origin},direction:{self.direction}'

@@ -28,8 +28,8 @@ def intersection_of_line_and_plane(m_line: Line3D, m_plane: Plane) -> (Point3D, 
     """
     计算直线与面的交点（不判断线在面上，此时有无穷多点）
     """
-    if dot(m_line.direction(), m_plane.vector):  # 判断平行,这里使用的是绝对判断，后面可以优化为小于极小值
-        temp = dot((m_plane.origin - m_line.begin), m_plane.vector) / dot(m_line.direction(), m_plane.vector)
+    if dot(m_line.direction(), m_plane.normal):  # 判断平行,这里使用的是绝对判断，后面可以优化为小于极小值
+        temp = dot((m_plane.point - m_line.begin), m_plane.normal) / dot(m_line.direction(), m_plane.normal)
         return m_line.get_point_from_t(temp)
     else:
         return None
@@ -72,8 +72,8 @@ def plane_rotate(x_plane, x_matrix, x_center=Point3D(0, 0, 0)):
     面起始点绕旋转中心旋转，直线方向向量绕原点旋转
     """
     assert isinstance(x_plane, Plane) and isinstance(x_matrix, np.ndarray) and isinstance(x_center, Point3D)
-    new_plane_origin = point_rotate(x_plane.origin, x_matrix, x_center)
-    new_plane_vector = point_rotate(x_plane.vector, x_matrix)
+    new_plane_origin = point_rotate(x_plane.point, x_matrix, x_center)
+    new_plane_vector = point_rotate(x_plane.normal, x_matrix)
     return Plane(new_plane_origin, new_plane_vector)
 
 
@@ -344,8 +344,8 @@ def is_point_equal(x_point_1, x_point_2):
 
 def distance_from_point_to_plane(x_point, x_plane):
     assert isinstance(x_point, Point3D) and isinstance(x_plane, Plane)
-    x_normal_vector = x_plane.vector
-    x_point_vector = x_point - x_plane.origin
+    x_normal_vector = x_plane.normal
+    x_point_vector = x_point - x_plane.point
     return dot_multiply(x_point_vector, x_normal_vector)
 
 
