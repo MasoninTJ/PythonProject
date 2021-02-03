@@ -315,9 +315,16 @@ class Ray2D:
 
 
 class Ray3D:
-    def __init__(self, m_origin: Point3D, m_direction: Point3D):
+    def __init__(self, m_origin: Point3D, m_direction: Vector3D):
         self.origin = m_origin
         self.direction = m_direction
 
     def __str__(self):
         return f'origin:{self.origin},direction:{self.direction}'
+
+    def get_point_from_t(self,t):
+        if t > 0:
+            return self.origin + self.direction * t
+        else:
+            return None
+

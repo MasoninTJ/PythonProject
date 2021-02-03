@@ -1,6 +1,7 @@
 import sys
 
 from Class3D import *
+import ConstMember
 
 
 def cross(m_vec1: (Vector3D, Vector2D), m_vec2: (Vector3D, Vector2D)) -> (Vector3D, float):
@@ -33,6 +34,30 @@ def intersection_of_line_and_plane(m_line: Line3D, m_plane: Plane) -> (Point3D, 
         return m_line.get_point_from_t(temp)
     else:
         return None
+
+
+def intersection_ray_and_triangle(m_ray: Ray3D, m_triangle: Triangle) -> (Point3D, None):
+    """
+    射线与三角形的交点，如果没有交点则返回None
+    """
+    vec_ab = m_triangle.vertex2 - m_triangle.vertex1
+    vec_ac = m_triangle.vertex3 - m_triangle.vertex1
+    p = cross(m_ray.direction, vec_ac)
+    a = dot(p, vec_ab)
+    if -ConstMember.epsilon5 < a < ConstMember.epsilon5:  # 判断平行
+        return None
+    f = 1 / a
+    s = m_ray.origin - m_triangle.vertex1
+    u = f * dot(s, p)
+    if u < 0:  # 点在三角形外
+        return None
+    q = cross(s, vec_ab)
+    v = f * dot(m_ray.direction, q)
+    if (v < 0 or u + v > 1):  # 点在三角形外
+        return None
+
+    t = f * np.dot(vec_ac, q)
+    return m_ray.get_point_from_t(t)
 
 
 def create_plane_from_3point(m_point1, m_point2, m_point3):
