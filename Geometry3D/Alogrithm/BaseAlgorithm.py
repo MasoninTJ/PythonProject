@@ -24,19 +24,19 @@ def dot(m_vec1: (Vector3D, Vector2D), m_vec2: (Vector3D, Vector2D)) -> np.ndarra
     return np.dot(m_vec1.to_array(), m_vec2.to_array())
 
 
-def intersection_of_line_and_plane(m_line: Line3D, m_plane: Plane) -> (Point3D, None):
+def intersection_of_ray_and_plane(m_Ray: Ray3D, m_plane: Plane) -> (Point3D, None):
     """
-    计算直线与面的交点（不判断线在面上，此时有无穷多点）
+    计算射线与面的交点（不判断线在面上，此时有无穷多点）
     """
-    f = dot(m_line.direction(), m_plane.normal)
+    f = dot(m_Ray.direction, m_plane.normal)
     if -ConstMember.epsilon5 < f < ConstMember.epsilon5:  # 判断平行,使用小于极小值
-        temp = dot((m_plane.point - m_line.begin), m_plane.normal) / f
-        return m_line.get_point_from_t(temp)
+        temp = dot((m_plane.point - m_Ray.origin), m_plane.normal) / f
+        return m_Ray.get_point_from_t(temp)
     else:
         return None
 
 
-def intersection_ray_and_triangle(m_ray: Ray3D, m_triangle: Triangle) -> (Point3D, None):
+def intersection_of_ray_and_triangle(m_ray: Ray3D, m_triangle: Triangle) -> (Point3D, None):
     """
     射线与三角形的交点，如果没有交点则返回None
     """
