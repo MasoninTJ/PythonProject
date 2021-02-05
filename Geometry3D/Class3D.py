@@ -232,8 +232,11 @@ class Vector3D:
         length = self.length()
         return self / length
 
-    def is_valid(self):
+    def check_valid(self):
         return self.to_array().all()
+
+    def check_normal(self):
+        return self.length() == 1
 
 
 class Line2D:
@@ -344,3 +347,23 @@ class Ray3D:
             return self.origin + self.direction * t
         else:
             return None
+
+
+class Box3D:
+    def __init__(self, m_min: Point3D = Point3D(-1, -1, -1), m_max: Point3D = Point3D(1, 1, 1)):
+        self.min = m_min
+        self.max = m_max
+
+        if self.min.x > self.max.x or self.min.y > self.max.y or self.min.z > self.max.z:
+            self.regularization()
+
+    def regularization(self):
+        """
+        AABB包围盒正则化，使 max 的三个值都大于 min 的三个值
+        """
+        if self.min.x > self.max.x:
+            self.min.x, self.max.x = self.max.x, self.min.x
+        if self.min.y > self.max.y:
+            self.min.y, self.max.y = self.max.y, self.min.y
+        if self.min.z > self.max.z:
+            self.min.z, self.max.z = self.max.z, self.min.z

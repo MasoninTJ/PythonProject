@@ -67,10 +67,17 @@ def create_plane_from_3point(m_point1: Point3D, m_point2: Point3D, m_point3: Poi
     m_vec1 = m_point2 - m_point1
     m_vec2 = m_point3 - m_point1
     m_normal = cross(m_vec1, m_vec2)
-    if m_normal.is_valid():  # 叉乘结果全是0时三点共线
+    if m_normal.check_valid():  # 叉乘结果全是0时三点共线
         return Plane(m_point1, m_normal)
     else:
         return None
+
+
+def check_intersect_ray_and_box(m_ray:Ray3D,m_box:Box3D) -> bool:
+    """
+    射线与AABB包围盒的相交检测
+    """
+    pass
 
 
 def vector_rotate(m_vector, m_matrix):
