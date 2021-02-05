@@ -24,14 +24,14 @@ def dot(m_vec1: (Vector3D, Vector2D), m_vec2: (Vector3D, Vector2D)) -> np.ndarra
     return np.dot(m_vec1.to_array(), m_vec2.to_array())
 
 
-def intersection_of_ray_and_plane(m_Ray: Ray3D, m_plane: Plane) -> (Point3D, None):
+def intersection_of_ray_and_plane(m_ray: Ray3D, m_plane: Plane) -> (Point3D, None):
     """
     计算射线与面的交点（不判断线在面上，此时有无穷多点）
     """
-    f = dot(m_Ray.direction, m_plane.normal)
+    f = dot(m_ray.direction, m_plane.normal)
     if -ConstMember.epsilon5 < f < ConstMember.epsilon5:  # 判断平行,使用小于极小值
-        temp = dot((m_plane.point - m_Ray.origin), m_plane.normal) / f
-        return m_Ray.get_point_from_t(temp)
+        temp = dot((m_plane.point - m_ray.origin), m_plane.normal) / f
+        return m_ray.get_point_from_t(temp)
     else:
         return None
 
@@ -73,11 +73,42 @@ def create_plane_from_3point(m_point1: Point3D, m_point2: Point3D, m_point3: Poi
         return None
 
 
-def check_intersect_ray_and_box(m_ray:Ray3D,m_box:Box3D) -> bool:
+def check_intersect_ray_and_box(m_ray: Ray3D, m_box: Box3D) -> (bool, Point3D, Point3D):
     """
     射线与AABB包围盒的相交检测
     """
-    pass
+    bounds = [m_box.min, m_box.max]
+    with np.errstate(divide='ignore'):                      # 屏蔽分母都为0的异常
+        inv_direction = 1 / m_ray.direction.to_array()
+    sign_x = 0 if inv_direction[0] > 0 else 1
+    sign_y = 0 if inv_direction[1] > 0 else 1
+    sign_z = 0 if inv_direction[2] > 0 else 1
+
+    with np.errstate(divide='ignore', invalid='ignore'):    # 屏蔽分子分母都为0的异常
+        t_min = (bounds[sign_x].x - m_ray.origin.x) * inv_direction[0]
+        t_max = (bounds[1 - sign_x].x - m_ray.origin.x) * inv_direction[0]
+        t_y_min = (bounds[sign_y].y - m_ray.origin.y) * inv_direction[1]
+        t_y_max = (bounds[1 - sign_y].y - m_ray.origin.y) * inv_direction[1]
+
+    if (t_min > t_y_max) or (t_y_min > t_max):
+        return False
+    if t_y_min > t_min or np.isnan(t_min):
+        t_min = t_y_min
+    if t_y_max < t_max or np.isnan(t_max):
+        t_max = t_y_max
+
+    with np.errstate(divide='ignore', invalid='ignore'):     # 屏蔽分子分母都为0的异常
+        t_z_min = (bounds[sign_z].z - m_ray.origin.z) * inv_direction[2]
+        t_z_max = (bounds[1 - sign_z].z - m_ray.origin.z) * inv_direction[2]
+
+    if (t_min > t_z_max) or (t_z_min > t_max):
+        return False
+    if t_z_min > t_min or np.isnan(t_min):
+        t_min = t_z_min
+    if t_z_max < t_max or np.isnan(t_max):
+        t_max = t_z_max
+
+    return True, m_ray.get_point_from_t(t_min), m_ray.get_point_from_t(t_max)
 
 
 def vector_rotate(m_vector, m_matrix):
