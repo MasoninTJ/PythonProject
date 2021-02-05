@@ -165,12 +165,14 @@ class Vector3D:
 
     def __add__(self, other):
         """
-        向量相加后仍为一个向量
+        向量相加后仍为一个向量,向量加点后为一个点
         @param other:
         @return:
         """
         if isinstance(other, Vector3D):
             return Vector3D(self.i + other.i, self.j + other.j, self.k + other.k)
+        elif isinstance(other, Point3D):
+            return Point3D(self.i + other.x, self.j + other.y, self.k + other.z)
         else:
             return None
 
@@ -303,9 +305,9 @@ class Sphere:
 
 class Triangle:
     def __init__(self, m_vertex1=Point3D(), m_vertex2=Point3D(), m_vertex3=Point3D()):
-        self.vertex1 = m_vertex1
-        self.vertex2 = m_vertex2
-        self.vertex3 = m_vertex3
+        self.vertex1 = deepcopy(m_vertex1)
+        self.vertex2 = deepcopy(m_vertex2)
+        self.vertex3 = deepcopy(m_vertex3)
 
     def __str__(self):
         return f'vertex1:{self.vertex1}, vertex2:{self.vertex2}, vertex3:{self.vertex3}'

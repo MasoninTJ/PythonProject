@@ -1,4 +1,7 @@
+from typing import List
+
 from Class3D import *
+from Matrix import Matrix3d, Matrix4d
 import ConstMember
 from Alogrithm import BaseTransfer
 
@@ -78,13 +81,13 @@ def check_intersect_ray_and_box(m_ray: Ray3D, m_box: Box3D) -> (bool, Point3D, P
     射线与AABB包围盒的相交检测
     """
     bounds = [m_box.min, m_box.max]
-    with np.errstate(divide='ignore'):                      # 屏蔽分母都为0的异常
+    with np.errstate(divide='ignore'):  # 屏蔽分母都为0的异常
         inv_direction = 1 / m_ray.direction.to_array()
     sign_x = 0 if inv_direction[0] > 0 else 1
     sign_y = 0 if inv_direction[1] > 0 else 1
     sign_z = 0 if inv_direction[2] > 0 else 1
 
-    with np.errstate(divide='ignore', invalid='ignore'):    # 屏蔽分子分母都为0的异常
+    with np.errstate(divide='ignore', invalid='ignore'):  # 屏蔽分子分母都为0的异常
         t_min = (bounds[sign_x].x - m_ray.origin.x) * inv_direction[0]
         t_max = (bounds[1 - sign_x].x - m_ray.origin.x) * inv_direction[0]
         t_y_min = (bounds[sign_y].y - m_ray.origin.y) * inv_direction[1]
@@ -97,7 +100,7 @@ def check_intersect_ray_and_box(m_ray: Ray3D, m_box: Box3D) -> (bool, Point3D, P
     if t_y_max < t_max or np.isnan(t_max):
         t_max = t_y_max
 
-    with np.errstate(divide='ignore', invalid='ignore'):     # 屏蔽分子分母都为0的异常
+    with np.errstate(divide='ignore', invalid='ignore'):  # 屏蔽分子分母都为0的异常
         t_z_min = (bounds[sign_z].z - m_ray.origin.z) * inv_direction[2]
         t_z_max = (bounds[1 - sign_z].z - m_ray.origin.z) * inv_direction[2]
 
@@ -111,69 +114,68 @@ def check_intersect_ray_and_box(m_ray: Ray3D, m_box: Box3D) -> (bool, Point3D, P
     return True, m_ray.get_point_from_t(t_min), m_ray.get_point_from_t(t_max)
 
 
-def vector_rotate(m_vector, m_matrix):
-    new_point_array = np.dot(m_matrix, m_vector.to_array())
-    return Vector3D(*new_point_array)
+def vector_rotate(m_vector: Vector3D, m_matrix: Matrix3d) -> Vector3D:
+    """
+    向量旋转
+    """
+    return m_matrix * m_vector
 
 
-def point_rotate(x_point, x_matrix, x_center=Point3D(0, 0, 0)):
+def point_rotate(m_point: Point3D, m_matrix: Matrix3d, m_center: Point3D = Point3D(0, 0, 0)) -> Point3D:
     """
-    既是点的旋转，又是向量的旋转
+    点的旋转，包含旋转中心
     """
-    assert isinstance(x_point, Point3D) and isinstance(x_matrix, np.ndarray) and isinstance(x_center, Point3D)
-    new_point_array = np.dot(x_matrix, (x_point - x_center).to_array()) + x_center.to_array()
-    return Point3D(*new_point_array)
+    if m_center.to_array().all():  # 原点为旋转中心
+        return m_matrix * m_point
+    else:
+        return m_matrix * (m_point - m_center) + m_center
 
 
-def line_rotate(x_line, x_matrix, x_center=Point3D(0, 0, 0)):
+def line_rotate(m_line: Line3D, m_matrix: Matrix3d, m_center: Point3D = Point3D(0, 0, 0)) -> Line3D:
     """
-    直线起始点绕旋转中心旋转，直线方向向量绕原点旋转
+    直线旋转，直线的两个点绕旋转中心旋转
     """
-    assert isinstance(x_line, Line3D) and isinstance(x_matrix, np.ndarray) and isinstance(x_center, Point3D)
-    new_line_origin = point_rotate(x_line.origin, x_matrix, x_center)
-    new_line_direction = point_rotate(x_line.direction(), x_matrix)
-    return Line3D(new_line_origin, new_line_direction)
+    new_line_begin = point_rotate(m_line.begin, m_matrix, m_center)
+    new_line_end = point_rotate(m_line.end, m_matrix, m_center)
+    return Line3D(new_line_begin, new_line_end)
 
 
-def plane_rotate(x_plane, x_matrix, x_center=Point3D(0, 0, 0)):
+def plane_rotate(m_plane: Plane, m_matrix: Matrix3d, m_center: Point3D = Point3D(0, 0, 0)):
     """
-    面起始点绕旋转中心旋转，直线方向向量绕原点旋转
+    面的旋转，面的点绕旋转中心旋转，法线向量绕原点旋转
     """
-    assert isinstance(x_plane, Plane) and isinstance(x_matrix, np.ndarray) and isinstance(x_center, Point3D)
-    new_plane_origin = point_rotate(x_plane.point, x_matrix, x_center)
-    new_plane_vector = point_rotate(x_plane.normal, x_matrix)
-    return Plane(new_plane_origin, new_plane_vector)
+    new_plane_point = point_rotate(m_plane.point, m_matrix, m_center)
+    new_plane_normal = vector_rotate(m_plane.normal, m_matrix)
+    return Plane(new_plane_point, new_plane_normal)
 
 
-def triangle_rotate(x_triangle, x_matrix, x_center=Point3D(0, 0, 0)):
+def triangle_rotate(m_triangle:Triangle, m_matrix:Matrix3d, m_center:Point3D=Point3D(0, 0, 0)):
     """
-    三角形三个顶点绕旋转中心旋转
+    三角形旋转，三角形三个顶点绕旋转中心旋转
     """
-    assert isinstance(x_triangle, Triangle) and isinstance(x_matrix, np.ndarray) and isinstance(x_center, Point3D)
-    new_vertex1 = point_rotate(x_triangle.vertex1, x_matrix, x_center)
-    new_vertex2 = point_rotate(x_triangle.vertex2, x_matrix, x_center)
-    new_vertex3 = point_rotate(x_triangle.vertex3, x_matrix, x_center)
+    new_vertex1 = point_rotate(m_triangle.vertex1, m_matrix, m_center)
+    new_vertex2 = point_rotate(m_triangle.vertex2, m_matrix, m_center)
+    new_vertex3 = point_rotate(m_triangle.vertex3, m_matrix, m_center)
     return Triangle(new_vertex1, new_vertex2, new_vertex3)
 
 
-def triangle_slice_rotate(x_triangle_slice, x_matrix, x_center=Point3D(0, 0, 0)):
+def mesh_rotate(m_mesh:Mesh, m_matrix:Matrix3d, m_center:Point3D=Point3D(0, 0, 0)):
     """
-    三角形三个顶点绕旋转中心旋转,法向量绕原点旋转
+    三角面片旋转，三角形三个顶点绕旋转中心旋转,法向量绕原点旋转
     """
-    new_vertex = triangle_rotate(x_triangle_slice.vertex, x_matrix, x_center)
-    new_facet = vector_rotate(x_triangle_slice.normal, x_matrix)
-    return Mesh(new_facet, new_vertex)
+    new_vertex = triangle_rotate(m_mesh.vertex, m_matrix, m_center)
+    new_normal = vector_rotate(m_mesh.normal, m_matrix)
+    return Mesh(new_normal, new_vertex)
 
 
-def model_rotate(x_model, x_matrix, x_center=Point3D(0, 0, 0)):
+def model_rotate(x_model: List[Mesh], x_matrix:Matrix3d, x_center:Point3D=Point3D(0, 0, 0)):
     """
     每个三角面片绕旋转中心旋转
     """
-    assert isinstance(x_model, STLModel) and isinstance(x_matrix, np.ndarray) and isinstance(x_center, Point3D)
-    triangle_list = []
-    for x_triangle_slice in x_model:
-        triangle_list.append(triangle_slice_rotate(x_triangle_slice, x_matrix, x_center))
-    return STLModel(triangle_list)
+    m_mesh_list = []
+    for m_mesh in x_model:
+        m_mesh_list.append(mesh_rotate(m_mesh, x_matrix, x_center))
+    return STLModel(m_mesh_list)
 
 
 def is_point_in_triangle_2d(x_point, x_triangle_2d):
