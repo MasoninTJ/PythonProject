@@ -1,3 +1,4 @@
+# 记录所有的常量变量
 epsilon1 = 1e-1
 epsilon2 = 1e-2
 epsilon3 = 1e-3
