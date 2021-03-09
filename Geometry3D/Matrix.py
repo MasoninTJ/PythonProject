@@ -1,7 +1,5 @@
 from Class3D import *
 
-import numpy as np
-
 
 class Matrix3d:
     def __init__(self, value: (list, np.ndarray)):
@@ -24,20 +22,40 @@ class Matrix3d:
         return self._value.__str__()
 
     def to_array(self):
+        """
+        矩阵转化为一维 ndarray
+        :return:
+        """
         return self._value.flatten()
 
     def inv(self):
+        """
+        矩阵求逆
+        :return:
+        """
         return np.linalg.inv(self._value)
 
     def transpose(self):
+        """
+        矩阵转置
+        :return:
+        """
         return self._value.transpose()
 
     @staticmethod
     def identity():
+        """
+        返回单位矩阵
+        :return:
+        """
         return np.identity(3)
 
     @staticmethod
     def zeros():
+        """
+        返回零矩阵
+        :return:
+        """
         return np.zeros(shape=(3, 3))
 
     @staticmethod
@@ -75,16 +93,16 @@ class Matrix4d:
         self._value: np.ndarray = np.array(value).reshape(shape)
 
     def __mul__(self, other):
-        matrix = self._value
+        m_matrix = self._value
         if isinstance(other, Point3D):  # 这里不想引入齐次形式，就直接写了
-            m_x = other.x * matrix[0, 0] + other.y * matrix[0, 1] + other.z * matrix[0, 2] + matrix[0, 3]
-            m_y = other.x * matrix[1, 0] + other.y * matrix[1, 1] + other.z * matrix[1, 2] + matrix[1, 3]
-            m_z = other.x * matrix[2, 0] + other.y * matrix[2, 1] + other.z * matrix[2, 2] + matrix[2, 3]
+            m_x = other.x * m_matrix[0, 0] + other.y * m_matrix[0, 1] + other.z * m_matrix[0, 2] + m_matrix[0, 3]
+            m_y = other.x * m_matrix[1, 0] + other.y * m_matrix[1, 1] + other.z * m_matrix[1, 2] + m_matrix[1, 3]
+            m_z = other.x * m_matrix[2, 0] + other.y * m_matrix[2, 1] + other.z * m_matrix[2, 2] + m_matrix[2, 3]
             return Point3D(m_x, m_y, m_z)
         elif isinstance(other, Vector3D):  # 这里不想引入齐次形式，就直接写了
-            m_i = other.i * matrix[0, 0] + other.j * matrix[0, 1] + other.k * matrix[0, 2]
-            m_j = other.i * matrix[1, 0] + other.j * matrix[1, 1] + other.k * matrix[1, 2]
-            m_k = other.i * matrix[2, 0] + other.j * matrix[2, 1] + other.k * matrix[2, 2]
+            m_i = other.i * m_matrix[0, 0] + other.j * m_matrix[0, 1] + other.k * m_matrix[0, 2]
+            m_j = other.i * m_matrix[1, 0] + other.j * m_matrix[1, 1] + other.k * m_matrix[1, 2]
+            m_k = other.i * m_matrix[2, 0] + other.j * m_matrix[2, 1] + other.k * m_matrix[2, 2]
             return Vector3D(m_i, m_j, m_k)
         elif isinstance(other, Matrix4d):
             return Matrix4d(*np.dot(self._value, other._value))
@@ -97,41 +115,77 @@ class Matrix4d:
         return self._value.__str__()
 
     def to_array(self):
+        """
+        矩阵转换为一维 ndarray
+        :return:
+        """
         return self._value.flatten()
 
     def inv(self):
+        """
+        矩阵求逆
+        :return:
+        """
         return np.linalg.inv(self._value)
 
     def transpose(self):
+        """
+        矩阵转置
+        :return:
+        """
         return self._value.transpose()
 
     @staticmethod
     def identity():
+        """
+        返回单位矩阵
+        :return:
+        """
         return np.identity(4)
 
     @staticmethod
     def zeros():
+        """
+        返回零矩阵
+        :return:
+        """
         return np.zeros(shape=(4, 4))
 
     @staticmethod
     def from_rotate(m_rotate_matrix: Matrix3d):
-        matrix = Matrix4d.identity()
-        matrix[0, :] = *m_rotate_matrix._value[0, :], 0
-        matrix[1, :] = *m_rotate_matrix._value[1, :], 0
-        matrix[2, :] = *m_rotate_matrix._value[2, :], 0
-        matrix[3, :] = 0, 0, 0, 1
-        return matrix
+        """
+        通过 3*3 的旋转矩阵构造 4*4 矩阵
+        :param m_rotate_matrix:
+        :return:
+        """
+        m_matrix = Matrix4d.identity()
+        # pycharm会报提示，因为用了_value，使用正常
+        m_matrix[0, :] = *m_rotate_matrix._value[0, :], 0
+        m_matrix[1, :] = *m_rotate_matrix._value[1, :], 0
+        m_matrix[2, :] = *m_rotate_matrix._value[2, :], 0
+        m_matrix[3, :] = 0, 0, 0, 1
+        return m_matrix
 
     @staticmethod
-    def from_translation(m_translation:Vector3D):
-        matrix = Matrix4d.identity()
-        matrix[0:3,3] = m_translation.to_array()
-        return matrix
+    def from_translation(m_translation: Vector3D):
+        """
+        通过平移向量构造平移矩阵
+        :param m_translation:
+        :return:
+        """
+        m_matrix = Matrix4d.identity()
+        m_matrix[0:3, 3] = m_translation.to_array()
+        return m_matrix
 
     @staticmethod
-    def from_scale(scale:(int,float)):
-        matrix = Matrix4d(np.diag((scale,scale,scale,1)))
-        return matrix
+    def from_scale(scale: (int, float)):
+        """
+        通过缩放值构造缩放矩阵
+        :param scale:
+        :return:
+        """
+        m_matrix = Matrix4d(np.diag((scale, scale, scale, 1)))
+        return m_matrix
 
 
 if __name__ == '__main__':
@@ -141,6 +195,6 @@ if __name__ == '__main__':
 
     print(Matrix4d.from_rotate(matrix))
 
-    print(Matrix4d.from_translation(Vector3D(1,2,3)))
+    print(Matrix4d.from_translation(Vector3D(1, 2, 3)))
 
     print(Matrix4d.from_scale(2))
