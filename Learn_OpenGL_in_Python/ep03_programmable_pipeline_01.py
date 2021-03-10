@@ -67,10 +67,13 @@ def test_opengl_programmable_pipeline():
     shader = compileProgram(compileShader(vertex_src, GL_VERTEX_SHADER), compileShader(fragment_src, GL_FRAGMENT_SHADER))
     glUseProgram(shader)
 
-    # 创建VBO并绑定
+    # 创建VBO
     vbo = glGenBuffers(1)
+    # 当前的 GL_ARRAY_BUFFER 位置为 vbo 缓冲区
     glBindBuffer(GL_ARRAY_BUFFER, vbo)
-    glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)  # vertices.nbytes 返回数组的大小，单位是字节
+    # 将 vertices 传入 GL_ARRAY_BUFFER 位置
+    # vertices.nbytes 返回数组的大小，单位是字节
+    glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
 
     # 绑定的VBO传入着色器中，指定接收的变量为a_position
     position = glGetAttribLocation(shader, 'a_position')

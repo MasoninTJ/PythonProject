@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 """
-使用location进行着色器传值，而非变量名字
+使用EBO,重复使用顶点信息
 """
 
 import glfw
@@ -8,7 +8,11 @@ from OpenGL.GL import *
 from OpenGL.GL.shaders import compileProgram, compileShader
 import numpy as np
 
-# 这里指定了location，因此下面可以做出相应的更改
+
+def window_resize(window, width, height):
+    glViewport(0, 0, width, height)
+
+
 vertex_src = """
 # version 330
 
@@ -48,15 +52,19 @@ def glfw_test_github():
         raise Exception('glfw windows can not be created!')
 
     glfw.set_window_pos(window, 2480, 240)
+    glfw.set_window_size_callback(window, window_resize)
+
     glfw.make_context_current(window)
-    # 现代可编程管线方式画图
     test_opengl_programmable_pipeline()
 
     while not glfw.window_should_close(window):
         glfw.swap_buffers(window)
         glClear(GL_COLOR_BUFFER_BIT)
 
-        glDrawArrays(GL_TRIANGLES, 0, 3)
+        # The glDrawElements function renders primitives from array data.
+        # glDrawElements 根据下标数组画图
+        glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, None)
+
         glfw.poll_events()
 
     glfw.terminate()
@@ -65,24 +73,38 @@ def glfw_test_github():
 def test_opengl_programmable_pipeline():
     glClearColor(0.3, 0.5, 0.5, 1)
 
-    vertices = np.array([-0.5, -0.5, 0.0, 1.0, 0.0, 0.0,
-                         0.5, -0.5, 0.0, 0.0, 1.0, 0.0,
-                         0.0, 0.5, 0.0, 0.0, 0.0, 1.0], dtype=np.float32)
+    # 增加顶点
+    vertices = [-0.5, -0.5, 0.0, 1.0, 0.0, 0.0,
+                0.5, -0.5, 0.0, 0.0, 1.0, 0.0,
+                -0.5, 0.5, 0.0, 0.0, 0.0, 1.0,
+                0.5, 0.5, 0.0, 1.0, 1.0, 1.0,
+                0.0, 0.75, 0.0, 1.0, 1.0, 0.0]
+
+    # 顶点的索引数组
+    indices = [0, 1, 2,
+               1, 2, 3,
+               2, 3, 4]
+
+    vertices = np.array(vertices, dtype=np.float32)
+    indices = np.array(indices, dtype=np.uint32)
 
     shader = compileProgram(compileShader(vertex_src, GL_VERTEX_SHADER), compileShader(fragment_src, GL_FRAGMENT_SHADER))
     glUseProgram(shader)
 
     vbo = glGenBuffers(1)
     glBindBuffer(GL_ARRAY_BUFFER, vbo)
-    glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)  # vertices.nbytes 返回数组的大小，单位是字节
+    glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
 
-    # 这里不再需要指定为a_position，只要知道是location=0的变量
+    # 新建 EBO，绑定方法与 VBO 一致
+    ebo = glGenBuffers(1)
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo)
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
+
     glEnableVertexAttribArray(0)
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(0))  # vertex 从第0个字节开始
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(0))
 
-    # 这里不再需要指定为a_color，只要知道是location=1的变量
     glEnableVertexAttribArray(1)
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(12))  # color 从第12个字节开始
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(12))
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 """
-使用可编程管线方式对三角形进行着色
+使用三角形带参数(GL_TRIANGLE_STRIP)
 """
 
 import glfw
@@ -8,7 +8,6 @@ from OpenGL.GL import *
 from OpenGL.GL.shaders import compileProgram, compileShader
 import numpy as np
 
-# 顶点着色器
 vertex_src = """
 # version 330
 
@@ -24,7 +23,6 @@ void main()
 }
 """
 
-# 片段着色器
 fragment_src = """
 # version 330
 
@@ -50,14 +48,14 @@ def glfw_test_github():
 
     glfw.set_window_pos(window, 2480, 240)
     glfw.make_context_current(window)
-    # 现代可编程管线方式画图
     test_opengl_programmable_pipeline()
 
     while not glfw.window_should_close(window):
         glfw.swap_buffers(window)
         glClear(GL_COLOR_BUFFER_BIT)
 
-        glDrawArrays(GL_TRIANGLES, 0, 3)
+        # 这里的参数改为三角形带(GL_TRIANGLE_STRIP)，就可以同时画两个三角形，而不用指定六个顶点，以及顶点的数量要修改为4
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4)
         glfw.poll_events()
 
     glfw.terminate()
@@ -66,24 +64,25 @@ def glfw_test_github():
 def test_opengl_programmable_pipeline():
     glClearColor(0.3, 0.5, 0.5, 1)
 
-    # 下面的方法只创建了一个缓冲区，因此临时将顶点和颜色放在同一个数组中
-    # 这里使用的方式是 (x,y,z,r,g,b)方式，因此下面将创建的vbo传给着色器时，间隔为24，且color从第12个字节开始
-    vertices = np.array([-0.5, -0.5, 0.0, 1.0, 0.0, 0.0,
-                         0.5, -0.5, 0.0, 0.0, 1.0, 0.0,
-                         0.0, 0.5, 0.0, 0.0, 0.0, 1.0], dtype=np.float32)
+    # 修改并增加一个顶点
+    vertices = [-0.5, -0.5, 0.0, 1.0, 0.0, 0.0,
+                0.5, -0.5, 0.0, 0.0, 1.0, 0.0,
+                -0.5, 0.5, 0.0, 0.0, 0.0, 1.0,
+                0.5, 0.5, 0.0, 1.0, 1.0, 1.0]
+    vertices = np.array(vertices, dtype=np.float32)
 
     shader = compileProgram(compileShader(vertex_src, GL_VERTEX_SHADER), compileShader(fragment_src, GL_FRAGMENT_SHADER))
     glUseProgram(shader)
 
     vbo = glGenBuffers(1)
     glBindBuffer(GL_ARRAY_BUFFER, vbo)
-    glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)  # vertices.nbytes 返回数组的大小，单位是字节
+    glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
 
     glEnableVertexAttribArray(0)
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(0))  # vertex 从第0个字节开始
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(0))
 
     glEnableVertexAttribArray(1)
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(12))  # color 从第12个字节开始
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(12))
 
 
 if __name__ == "__main__":

@@ -75,14 +75,16 @@ def test_opengl_programmable_pipeline():
     shader = compileProgram(compileShader(vertex_src, GL_VERTEX_SHADER), compileShader(fragment_src, GL_FRAGMENT_SHADER))
     glUseProgram(shader)
 
+
     vbo = glGenBuffers(1)
     glBindBuffer(GL_ARRAY_BUFFER, vbo)
-    glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)  # vertices.nbytes 返回数组的大小，单位是字节
+    glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
 
     position = glGetAttribLocation(shader, 'a_position')
     glEnableVertexAttribArray(position)
     glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(0))  # vertex 从第0个字节开始
 
+    # 由于color和vertex放在同一个数组中，因此不需要创建两个缓冲区
     color = glGetAttribLocation(shader, 'a_color')
     glEnableVertexAttribArray(color)
     glVertexAttribPointer(color, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(12))  # color 从第12个字节开始
