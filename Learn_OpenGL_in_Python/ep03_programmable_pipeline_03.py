@@ -4,16 +4,16 @@
 """
 
 import glfw
+import numpy as np
 from OpenGL.GL import *
 from OpenGL.GL.shaders import compileProgram, compileShader
-import numpy as np
 
 # 这里指定了location，因此下面可以做出相应的更改
 vertex_src = """
 # version 330
 
 layout(location = 0) in vec3 a_position;
-layout(location = 1)in vec3 a_color;
+layout(location = 1) in vec3 a_color;
 
 out vec3 v_color;
 

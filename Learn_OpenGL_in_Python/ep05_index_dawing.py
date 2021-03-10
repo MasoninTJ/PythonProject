@@ -4,9 +4,9 @@
 """
 
 import glfw
+import numpy as np
 from OpenGL.GL import *
 from OpenGL.GL.shaders import compileProgram, compileShader
-import numpy as np
 
 
 def window_resize(window, width, height):
@@ -17,7 +17,7 @@ vertex_src = """
 # version 330
 
 layout(location = 0) in vec3 a_position;
-layout(location = 1)in vec3 a_color;
+layout(location = 1) in vec3 a_color;
 
 out vec3 v_color;
 
@@ -53,24 +53,8 @@ def glfw_test_github():
 
     glfw.set_window_pos(window, 2480, 240)
     glfw.set_window_size_callback(window, window_resize)
-
     glfw.make_context_current(window)
-    test_opengl_programmable_pipeline()
 
-    while not glfw.window_should_close(window):
-        glfw.swap_buffers(window)
-        glClear(GL_COLOR_BUFFER_BIT)
-
-        # The glDrawElements function renders primitives from array data.
-        # glDrawElements 根据下标数组画图
-        glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, None)
-
-        glfw.poll_events()
-
-    glfw.terminate()
-
-
-def test_opengl_programmable_pipeline():
     glClearColor(0.3, 0.5, 0.5, 1)
 
     # 增加顶点
@@ -105,6 +89,18 @@ def test_opengl_programmable_pipeline():
 
     glEnableVertexAttribArray(1)
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(12))
+
+    while not glfw.window_should_close(window):
+        glfw.swap_buffers(window)
+        glClear(GL_COLOR_BUFFER_BIT)
+
+        # The glDrawElements function renders primitives from array data.
+        # glDrawElements 根据下标数组画图
+        glDrawElements(GL_TRIANGLES, len(indices), GL_UNSIGNED_INT, None)
+
+        glfw.poll_events()
+
+    glfw.terminate()
 
 
 if __name__ == "__main__":
