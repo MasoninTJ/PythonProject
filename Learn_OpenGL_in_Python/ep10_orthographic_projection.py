@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 """
-透视投影(近大远小)
+正视投影（正常3D视图我比较倾向于这个）
 """
 
 from io import BytesIO
@@ -150,15 +150,15 @@ def glfw_test_github():
     glEnableVertexAttribArray(2)
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, vertices.itemsize * 8, ctypes.c_void_p(vertices.itemsize * 6))
 
-    # 创建透视投影矩阵
-    projection = pyrr.matrix44.create_perspective_projection_matrix(45, 800 / 600, 0.1, 100)
+    # 创建正视投影矩阵
+    projection = pyrr.matrix44.create_orthogonal_projection_matrix(0, 800, 0, 600, -1000, 1000)
     proj_loc = glGetUniformLocation(shader, 'projection')
-
-    # 给着色器传递透视投影矩阵
+    # 给着色器传递正视投影矩阵
     glUniformMatrix4fv(proj_loc, 1, GL_FALSE, projection)
 
-    #
-    translation = pyrr.matrix44.create_from_translation(pyrr.Vector3([0, 0, -3]))
+    # 使用正视投影必须给出对应的缩放量与平移量
+    scale = pyrr.matrix44.create_from_scale(pyrr.Vector3([200, 200, 200]))
+    translation = pyrr.matrix44.create_from_translation(pyrr.Vector3([400, 200, -3]))
 
     model_loc = glGetUniformLocation(shader, 'model')
 
@@ -169,8 +169,10 @@ def glfw_test_github():
         rot_x = pyrr.Matrix44.from_x_rotation(0.5 * glfw.get_time())
         rot_y = pyrr.Matrix44.from_y_rotation(0.5 * glfw.get_time())
 
+        # 先缩放，再旋转，再平移
         rotation = pyrr.matrix44.multiply(rot_x, rot_y)
-        model = pyrr.matrix44.multiply(rotation, translation)
+        model = pyrr.matrix44.multiply(scale, rotation)
+        model = pyrr.matrix44.multiply(model, translation)
 
         glUniformMatrix4fv(model_loc, 1, GL_FALSE, model)
 

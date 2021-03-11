@@ -158,6 +158,8 @@ def glfw_test_github():
     glUniformMatrix4fv(proj_loc, 1, GL_FALSE, projection)
 
     # 旋转之后平移一下，才能正确观察到立方体，否则只能观察到立方体的内部
+    # 这里有一点需要注意的是，为什么是-3
+    # 因为平移的是模型，模型向下平移了-3，相当于相机向上平移了3
     translation = pyrr.matrix44.create_from_translation(pyrr.Vector3([0, 0, -3]))
 
     model_loc = glGetUniformLocation(shader, 'model')
