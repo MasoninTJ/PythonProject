@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 """
-引入VAO画多个基元
+引入VAO画多个基元(多个顶点对象)
 """
 
 from io import BytesIO
@@ -34,7 +34,7 @@ void main()
 }
 """
 
-# 为了显示好看把颜色去掉了
+# 增加switcher判断
 fragment_src = """
 # version 330
 
