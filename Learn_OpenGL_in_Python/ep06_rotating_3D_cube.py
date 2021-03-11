@@ -114,6 +114,10 @@ def glfw_test_github():
         rot_y = pyrr.Matrix44.from_y_rotation(0.5 * glfw.get_time())
 
         # 传入旋转矩阵，矩阵的乘法有多种形式
+        # 实际测试之后发现后面两种结果是一样的，都是左乘，即 rot_x * rot_y
+        # 至于 rot_x * rot_y,他实际上的右乘。实际的运算是 rot_y * rot_x
+        # 这里原教程中提到了 rot_x * rot_y 在 pygame 中有时候不生效，具体原因没有提到
+        # 实际测试之后发现是右乘。
         # glUniformMatrix4fv(rotation_loc, 1, GL_FALSE, rot_x * rot_y)
         # glUniformMatrix4fv(rotation_loc, 1, GL_FALSE, rot_x @ rot_y)
         glUniformMatrix4fv(rotation_loc, 1, GL_FALSE, pyrr.matrix44.multiply(rot_x, rot_y))

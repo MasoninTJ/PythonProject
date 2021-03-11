@@ -1,6 +1,6 @@
 import Alogrithm.BaseAlgorithm as Alg
 from Class3D import *
-from Matrix import Matrix3d, Matrix4d
+from Matrix import Matrix3d
 
 
 def test_check_intersect_ray_and_box():
@@ -33,23 +33,30 @@ def test_check_intersect_ray_and_box():
 
 
 def test_vector_rotate():
-    t_vector0 = Vector3D(1,0,0)
-    t_matrix0 = Matrix3d.from_euler_angle(0,0,np.pi/2)
-    test_data0 = (t_vector0,t_matrix0)    # 返回 (0,1,0)
+    t_vector0 = Vector3D(1, 0, 0)
+    t_matrix0 = Matrix3d.from_euler_angle(0, 0, np.pi / 2)
+    test_data0 = (t_vector0, t_matrix0)  # 返回 (0,1,0)
 
     print(Alg.vector_rotate(*test_data0))
 
-def test_point_rotate():
-    t_point0 = Point3D(1,0,0)
-    t_matrix0 = Matrix3d.from_euler_angle(0,0,np.pi/2)
-    test_data0 = (t_point0,t_matrix0)    # 返回 (0,1,0)
 
-    t_point1 = Point3D(1,0,0)
-    t_matrix1 = Matrix3d.from_euler_angle(0,0,np.pi/2)
-    t_center1 = Point3D(-1,0,0)
-    test_data1 = (t_point1,t_matrix1,t_center1)    # 返回 (0,1,0)
+def test_point_rotate():
+    t_point0 = Point3D(1, 0, 0)
+    t_matrix0 = Matrix3d.from_euler_angle(0, 0, np.pi / 2)
+    test_data0 = (t_point0, t_matrix0)  # 返回 (0,1,0)
+
+    t_point1 = Point3D(1, 0, 0)
+    t_matrix1 = Matrix3d.from_euler_angle(0, 0, np.pi / 2)
+    t_center1 = Point3D(-1, 0, 0)
+    test_data1 = (t_point1, t_matrix1, t_center1)  # 返回 (0,1,0)
 
     print(Alg.point_rotate(*test_data1))
 
+
+def test_from_euler_angle():
+    t_matrix0 = Matrix3d.from_euler_angle(0, 0, np.pi / 2)
+    print(t_matrix0)
+
+
 if __name__ == '__main__':
-    test_point_rotate()
+    test_from_euler_angle()
