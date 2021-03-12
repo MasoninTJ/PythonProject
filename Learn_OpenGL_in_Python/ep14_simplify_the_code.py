@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 """
-引入VAO画多个基元(多个顶点对象)
+简化代码(其实就是用VAO数组，VBO数组，VEO数组)
 """
 
 from io import BytesIO
@@ -34,7 +34,6 @@ void main()
 }
 """
 
-# 增加switcher判断
 fragment_src = """
 # version 330
 
@@ -90,7 +89,11 @@ def glfw_test_github():
     load_texture(image_path_2, texture[1])
     load_texture(image_path_3, texture[2])
 
-    # region 构造cube并且设置对应的参数
+    VAO = glGenVertexArrays(3)
+    VBO = glGenBuffers(3)
+    EBO = glGenBuffers(2)
+
+    # region 构造cube
     cube_vertices = [-0.5, -0.5, 0.5, 0.0, 0.0,
                      0.5, -0.5, 0.5, 1.0, 0.0,
                      0.5, 0.5, 0.5, 1.0, 1.0,
@@ -131,16 +134,12 @@ def glfw_test_github():
     cube_vertices = np.array(cube_vertices, dtype=np.float32)
     cube_indices = np.array(cube_indices, dtype=np.uint32)
 
-    # cube VAO
-    cube_vao = glGenVertexArrays(1)
-    glBindVertexArray(cube_vao)
+    glBindVertexArray(VAO[0])
 
-    cube_vbo = glGenBuffers(1)
-    glBindBuffer(GL_ARRAY_BUFFER, cube_vbo)
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[0])
     glBufferData(GL_ARRAY_BUFFER, cube_vertices.nbytes, cube_vertices, GL_STATIC_DRAW)
 
-    cube_ebo = glGenBuffers(1)
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cube_ebo)
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[0])
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, cube_indices.nbytes, cube_indices, GL_STATIC_DRAW)
 
     # 定义cube顶点的读取方式
@@ -164,15 +163,12 @@ def glfw_test_github():
     quad_indices = np.array(quad_indices, dtype=np.uint32)
 
     # quad VAO
-    quad_vao = glGenVertexArrays(1)
-    glBindVertexArray(quad_vao)
+    glBindVertexArray(VAO[1])
 
-    quad_vbo = glGenBuffers(1)
-    glBindBuffer(GL_ARRAY_BUFFER, quad_vbo)
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[1])
     glBufferData(GL_ARRAY_BUFFER, quad_vertices.nbytes, quad_vertices, GL_STATIC_DRAW)
 
-    quad_ebo = glGenBuffers(1)
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quad_ebo)
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[1])
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, quad_indices.nbytes, quad_indices, GL_STATIC_DRAW)
 
     # 定义quad顶点的读取方式
@@ -192,11 +188,9 @@ def glfw_test_github():
     triangle_vertices = np.array(triangle_vertices, dtype=np.float32)
 
     # quad VAO
-    tri_vao = glGenVertexArrays(1)
-    glBindVertexArray(tri_vao)
+    glBindVertexArray(VAO[2])
 
-    tri_vbo = glGenBuffers(1)
-    glBindBuffer(GL_ARRAY_BUFFER, tri_vbo)
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[2])
     glBufferData(GL_ARRAY_BUFFER, triangle_vertices.nbytes, triangle_vertices, GL_STATIC_DRAW)
 
     # 定义tri顶点的读取方式
@@ -241,14 +235,14 @@ def glfw_test_github():
         glUniform1i(switcher_loc, 0)
 
         # 绘制cube
-        glBindVertexArray(cube_vao)
+        glBindVertexArray(VAO[0])
         glBindTexture(GL_TEXTURE_2D, texture[0])
         cube_model = pyrr.matrix44.multiply(model, cube_pos)
         glUniformMatrix4fv(model_loc, 1, GL_FALSE, cube_model)
         glDrawElements(GL_TRIANGLES, len(cube_indices), GL_UNSIGNED_INT, None)
 
         # 绘制quad
-        glBindVertexArray(quad_vao)
+        glBindVertexArray(VAO[1])
         glBindTexture(GL_TEXTURE_2D, texture[1])
         quad_model = pyrr.matrix44.multiply(model, quad_pos)
         glUniformMatrix4fv(model_loc, 1, GL_FALSE, quad_model)
@@ -258,7 +252,7 @@ def glfw_test_github():
         glUniform1i(switcher_loc, 1)
 
         # 绘制彩色三角形
-        glBindVertexArray(tri_vao)
+        glBindVertexArray(VAO[2])
         triangle_model = pyrr.matrix44.multiply(model, triangle_pos)
         glUniformMatrix4fv(model_loc, 1, GL_FALSE, triangle_model)
         glDrawArrays(GL_TRIANGLES, 0, 3)
@@ -269,10 +263,16 @@ def glfw_test_github():
 
 
 def window_resize(width, height):
+    """
+    窗口调整大小
+    """
     glViewport(0, 0, width, height)
 
 
 def load_texture(path: str, texture):
+    """
+    读取纹理图片
+    """
     if path.startswith('https:'):  # 从网络读取图片
         import requests
         html_image = requests.get(path)
