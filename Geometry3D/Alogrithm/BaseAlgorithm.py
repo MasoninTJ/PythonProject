@@ -1,9 +1,9 @@
 from typing import List
 
-from Class3D import *
-from Matrix import Matrix3d, Matrix4d
 import ConstMember
 from Alogrithm import BaseTransfer
+from Class3D import *
+from Matrix import Matrix3d
 
 
 def cross(m_vec1: (Vector3D, Vector2D), m_vec2: (Vector3D, Vector2D)) -> (Vector3D, float):
@@ -149,7 +149,7 @@ def plane_rotate(m_plane: Plane, m_matrix: Matrix3d, m_center: Point3D = Point3D
     return Plane(new_plane_point, new_plane_normal)
 
 
-def triangle_rotate(m_triangle:Triangle, m_matrix:Matrix3d, m_center:Point3D=Point3D(0, 0, 0)):
+def triangle_rotate(m_triangle: Triangle, m_matrix: Matrix3d, m_center: Point3D = Point3D(0, 0, 0)):
     """
     三角形旋转，三角形三个顶点绕旋转中心旋转
     """
@@ -159,7 +159,7 @@ def triangle_rotate(m_triangle:Triangle, m_matrix:Matrix3d, m_center:Point3D=Poi
     return Triangle(new_vertex1, new_vertex2, new_vertex3)
 
 
-def mesh_rotate(m_mesh:Mesh, m_matrix:Matrix3d, m_center:Point3D=Point3D(0, 0, 0)):
+def mesh_rotate(m_mesh: Mesh, m_matrix: Matrix3d, m_center: Point3D = Point3D(0, 0, 0)):
     """
     三角面片旋转，三角形三个顶点绕旋转中心旋转,法向量绕原点旋转
     """
@@ -168,7 +168,7 @@ def mesh_rotate(m_mesh:Mesh, m_matrix:Matrix3d, m_center:Point3D=Point3D(0, 0, 0
     return Mesh(new_normal, new_vertex)
 
 
-def model_rotate(x_model: List[Mesh], x_matrix:Matrix3d, x_center:Point3D=Point3D(0, 0, 0)):
+def model_rotate(x_model: List[Mesh], x_matrix: Matrix3d, x_center: Point3D = Point3D(0, 0, 0)):
     """
     每个三角面片绕旋转中心旋转
     """

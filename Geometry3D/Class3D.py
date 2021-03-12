@@ -319,13 +319,24 @@ class Mesh:
         self.vertex = m_vertex
 
     def __str__(self):
-        return f'normal:{self.normal},vertex:{self.vertex}'
+        return f'normal:{self.normal}, {self.vertex}'
 
 
 class STLModel:
     def __init__(self, m_mesh_list):
         self.mesh_list = m_mesh_list
 
+    def __len__(self):
+        return len(self.mesh_list)
+
+    def __getitem__(self, m_index):
+        return self.mesh_list[m_index]
+
+    def __str__(self):
+        print('三角面片开始显示')
+        for i, x in enumerate(self.mesh_list):
+            print(i, ':', x)
+        return '三角面片显示结束'
 
 class Ray2D:
     def __init__(self, m_origin: Point2D, m_direction: Point2D):
