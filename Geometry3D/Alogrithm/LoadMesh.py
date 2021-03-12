@@ -1,7 +1,7 @@
 import codecs
 import struct
 
-from Geometry3D.Class3D import STLModel, Mesh, Point3D, Vector3D, Triangle
+from Geometry3D.Class3D import STLModel, Mesh, Triangle, Vector3D, Point3D
 
 
 def load_stl_model(m_path: str) -> STLModel:
