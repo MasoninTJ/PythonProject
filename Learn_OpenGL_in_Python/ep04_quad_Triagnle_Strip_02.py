@@ -10,6 +10,9 @@ from OpenGL.GL.shaders import compileProgram, compileShader
 
 
 def window_resize(window, width, height):
+    """
+    窗口调整大小
+    """
     # glViewport —— set the viewport 设置视口
     # x, y —— Specify the lower left corner of the viewport rectangle, in pixels. The initial value is (0,0).
     # width, height —— Specify the width and height of the viewport.

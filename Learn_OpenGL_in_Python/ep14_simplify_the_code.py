@@ -269,16 +269,10 @@ def glfw_test_github():
 
 
 def window_resize(width, height):
-    """
-    窗口调整大小
-    """
     glViewport(0, 0, width, height)
 
 
 def load_texture(path: str, texture):
-    """
-    读取纹理图片
-    """
     if path.startswith('https:'):  # 从网络读取图片
         import requests
         html_image = requests.get(path)
