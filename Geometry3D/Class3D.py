@@ -312,6 +312,19 @@ class Triangle:
     def __str__(self):
         return f'vertex1:{self.vertex1}, vertex2:{self.vertex2}, vertex3:{self.vertex3}'
 
+    def get_point_from_abc(self, a: (int, float), b: (int, float), c: (int, float)) -> (Point3D, None):
+        """
+        输出三角形内的点，通过三角形内点的参数方程获得
+        """
+        if 0 < a < 1 and 0 < b < 1 and 0 < c < 1:
+            array_vertext_1 = self.vertex1.to_array()
+            array_vertext_2 = self.vertex2.to_array()
+            array_vertext_3 = self.vertex3.to_array()
+            array_point = array_vertext_1 * a + array_vertext_2 * b + array_vertext_3 * c
+            return Point3D(array_point)
+        else:
+            return None
+
 
 class Mesh:
     def __init__(self, m_normal: Vector3D, m_vertex: Triangle):
@@ -337,6 +350,7 @@ class STLModel:
         for i, x in enumerate(self.mesh_list):
             print(i, ':', x)
         return '三角面片显示结束'
+
 
 class Ray2D:
     def __init__(self, m_origin: Point2D, m_direction: Point2D):

@@ -1,3 +1,7 @@
+# -*- encoding: utf-8 -*-
+"""
+单元测试
+"""
 import Alogrithm.BaseAlgorithm as Alg
 from Class3D import *
 from Matrix import Matrix3d
@@ -58,5 +62,19 @@ def test_from_euler_angle():
     print(t_matrix0)
 
 
+def test_rodrigues():
+    m_angle = np.pi/2
+    m_axis = Vector3D(0, 0, 1)
+    print(Alg.rodrigues(m_axis * m_angle))
+
+
+def test_get_rotate_matrix_from_two_vector():
+    t_vec_0 = Vector3D(1, 0, 0)
+    t_vec_1 = Vector3D(0, 1, 0)
+    print(Alg.get_rotate_matrix_from_two_vector(t_vec_0, t_vec_1))
+
+
 if __name__ == '__main__':
     test_from_euler_angle()
+    test_get_rotate_matrix_from_two_vector()
+    test_rodrigues()
