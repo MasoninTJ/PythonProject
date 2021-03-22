@@ -57,7 +57,7 @@ def glfw_test_github():
         glfw.terminate()
         raise Exception('glfw windows can not be created!')
 
-    glfw.set_window_pos(window, 280, 240)
+    glfw.set_window_pos(window, 280, 140)
     glfw.set_window_size_callback(window, window_resize)
     glfw.make_context_current(window)
 
@@ -66,8 +66,7 @@ def glfw_test_github():
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
-    shader = compileProgram(compileShader(vertex_src, GL_VERTEX_SHADER),
-                            compileShader(fragment_src, GL_FRAGMENT_SHADER))
+    shader = compileProgram(compileShader(vertex_src, GL_VERTEX_SHADER), compileShader(fragment_src, GL_FRAGMENT_SHADER))
     glUseProgram(shader)
 
     VAO = glGenVertexArrays(1)
@@ -89,7 +88,7 @@ def glfw_test_github():
         m_model_vertices.extend(m_mesh.normal.to_array())
         m_model_vertices.extend([1.0, 1.0, 0.0])
     m_model_vertices = np.array(m_model_vertices, dtype=np.float32)
-    print(len(m_model_vertices))
+    print(f'共{len(m_model) * 3}个顶点')
 
     # model VAO
     glBindVertexArray(VAO)
@@ -112,8 +111,8 @@ def glfw_test_github():
 
     # model matrix
     model_loc = glGetUniformLocation(shader, 'model')
-    scale = pyrr.matrix44.create_from_scale(pyrr.Vector3([1, 1, 1]))
-    model_pos = pyrr.matrix44.create_from_translation(pyrr.Vector3([300, 300, 0]))
+    scale = pyrr.matrix44.create_from_scale(pyrr.Vector3([2, 2, 2]))  # 这里缩放，好像是数字越小，物体也越小
+    model_pos = pyrr.matrix44.create_from_translation(pyrr.Vector3([400, 400, 0]))
 
     # view matrix
     view_loc = glGetUniformLocation(shader, 'view')
@@ -135,11 +134,11 @@ def glfw_test_github():
         rotation = pyrr.matrix44.multiply(rot_x, rot_y)
         model = pyrr.matrix44.multiply(scale, rotation)
 
-        # 绘制彩色三角形
+        # 绘制STL模型
         glBindVertexArray(VAO)
         triangle_model = pyrr.matrix44.multiply(model, model_pos)
         glUniformMatrix4fv(model_loc, 1, GL_FALSE, triangle_model)
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, len(m_model)*3)
+        glDrawArrays(GL_TRIANGLES, 0, len(m_model) * 3)  # 每个网格三个顶点
 
         glfw.poll_events()
 
