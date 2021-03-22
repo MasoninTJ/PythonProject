@@ -8,9 +8,44 @@ import numpy as np
 import pyrr
 from OpenGL.GL import *
 from OpenGL.GL.shaders import compileProgram, compileShader
+from pyrr import Vector3, matrix44
 
 from Alogrithm.LoadMesh import load_stl_model
 from Class3D import STLModel
+
+
+class Camera:
+    def __init__(self):
+        self.camera_pos = Vector3([0, 0, 3])
+        self.camera_front = Vector3([0, 0, -1])
+        self.camera_up = Vector3([0, 1, 0])
+        self.camera_right = Vector3([1, 0, 0])
+
+        self.camera_senitivity = 0.25
+        self.jaw = -90
+        self.pitch = 0
+
+    def get_view_matrix(self):
+        return matrix44.create_look_at(self.camera_pos, self.camera_pos + self.camera_front, self.camera_up)
+
+    def process_mouse_movement(self, m_x_offset, m_y_offset, constrain_pitch=True):
+        m_x_offset *= self.camera_senitivity
+        m_y_offset *= self.camera_senitivity
+
+        self.jaw += m_x_offset
+        self.pitch += m_y_offset
+
+        if constrain_pitch:
+            if self.pitch > 45:
+                self.pitch = 45
+            if self.pitch < -45:
+                self.pitch = 45
+
+        self.update_camera_vectors()
+
+    def update_camera_vectors(self):
+        pass
+
 
 # 对顶点着色器进行修改，顶点 + 向量 + 颜色
 vertex_src = """
@@ -141,6 +176,7 @@ def glfw_test_github():
         glDrawArrays(GL_TRIANGLES, 0, len(m_model) * 3)  # 每个网格三个顶点
 
         glfw.poll_events()
+        print(glfw.get_cursor_pos(window))
 
     glfw.terminate()
 

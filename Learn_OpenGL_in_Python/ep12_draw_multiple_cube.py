@@ -13,7 +13,7 @@ from OpenGL.GL.shaders import compileProgram, compileShader
 from PIL import Image
 
 
-def window_resize(width, height):
+def window_resize(windows, width, height):
     """
     窗口调整大小
     """

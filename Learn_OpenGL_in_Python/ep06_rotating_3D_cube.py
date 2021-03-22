@@ -10,7 +10,7 @@ from OpenGL.GL import *
 from OpenGL.GL.shaders import compileProgram, compileShader
 
 
-def window_resize(width, height):
+def window_resize(windows, width, height):
     """
     窗口调整大小
     """

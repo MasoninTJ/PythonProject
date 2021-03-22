@@ -268,7 +268,7 @@ def glfw_test_github():
     glfw.terminate()
 
 
-def window_resize(width, height):
+def window_resize(windows, width, height):
     """
     窗口调整大小
     """
