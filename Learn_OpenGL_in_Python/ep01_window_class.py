@@ -28,5 +28,5 @@ class Window:
 
 
 if __name__ == '__main__':
-    test_window = Window(800, 600, 2480, 240)
+    test_window = Window(800, 600, 280, 240)
     test_window.main_loop()

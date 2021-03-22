@@ -69,7 +69,7 @@ def glfw_test_github():
         glfw.terminate()
         raise Exception('glfw windows can not be created!')
 
-    glfw.set_window_pos(window, 2480, 240)
+    glfw.set_window_pos(window, 280, 240)
     glfw.set_window_size_callback(window, window_resize)
     glfw.make_context_current(window)
 
@@ -187,7 +187,7 @@ def glfw_test_github():
 
     triangle_vertices = np.array(triangle_vertices, dtype=np.float32)
 
-    # quad VAO
+    # tri VAO
     glBindVertexArray(VAO[2])
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO[2])

@@ -70,7 +70,7 @@ def glfw_test_github():
         glfw.terminate()
         raise Exception('glfw windows can not be created!')
 
-    glfw.set_window_pos(window, 2480, 240)
+    glfw.set_window_pos(window, 280, 240)
     glfw.set_window_size_callback(window, window_resize)
     glfw.make_context_current(window)
 

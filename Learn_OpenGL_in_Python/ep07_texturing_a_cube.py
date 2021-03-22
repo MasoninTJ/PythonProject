@@ -70,7 +70,7 @@ def glfw_test_github():
         glfw.terminate()
         raise Exception('glfw windows can not be created!')
 
-    glfw.set_window_pos(window, 2480, 240)
+    glfw.set_window_pos(window, 280, 240)
     glfw.set_window_size_callback(window, window_resize)
     glfw.make_context_current(window)
 
@@ -162,7 +162,7 @@ def glfw_test_github():
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, vertices.itemsize * 8, ctypes.c_void_p(vertices.itemsize * 3))
 
     # 传入纹理的坐标
-    # 这里 vertices.itemsize 返回每个元素的大小，4 * 8 = 32
+    # 这里 vertices.itemsize 返回每个元素的大小，4 * 8 = 32，8 是间隔
     glEnableVertexAttribArray(2)
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, vertices.itemsize * 8, ctypes.c_void_p(vertices.itemsize * 6))
 

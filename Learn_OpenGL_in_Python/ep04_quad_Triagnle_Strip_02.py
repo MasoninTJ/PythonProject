@@ -58,7 +58,7 @@ def glfw_test_github():
         glfw.terminate()
         raise Exception('glfw windows can not be created!')
 
-    glfw.set_window_pos(window, 2480, 240)
+    glfw.set_window_pos(window, 280, 240)
     # This function sets the size callback of the specified window, which is called when the window is resized.
     # 此函数设置指定窗口的大小回调，在调整窗口大小时调用该函数
     # The callback is provided with the size, in screen coordinates, of the content area of the window.
