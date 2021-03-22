@@ -52,7 +52,7 @@ def glfw_test_github():
     if not glfw.init():
         raise Exception('glfw can not be initialized!')
 
-    window = glfw.create_window(800, 600, "Hello World", None, None)
+    window = glfw.create_window(800, 800, "Hello World", None, None)
     if not window:
         glfw.terminate()
         raise Exception('glfw windows can not be created!')
@@ -112,7 +112,7 @@ def glfw_test_github():
 
     # model matrix
     model_loc = glGetUniformLocation(shader, 'model')
-    scale = pyrr.matrix44.create_from_scale(pyrr.Vector3([200, 200, 200]))
+    scale = pyrr.matrix44.create_from_scale(pyrr.Vector3([1, 1, 1]))
     model_pos = pyrr.matrix44.create_from_translation(pyrr.Vector3([300, 300, 0]))
 
     # view matrix
@@ -122,7 +122,7 @@ def glfw_test_github():
 
     # projection matrix
     proj_loc = glGetUniformLocation(shader, 'projection')
-    projection = pyrr.matrix44.create_orthogonal_projection_matrix(0, 800, 0, 600, -1000, 1000)
+    projection = pyrr.matrix44.create_orthogonal_projection_matrix(0, 800, 0, 800, -1000, 1000)
     glUniformMatrix4fv(proj_loc, 1, GL_FALSE, projection)
 
     while not glfw.window_should_close(window):
@@ -139,7 +139,7 @@ def glfw_test_github():
         glBindVertexArray(VAO)
         triangle_model = pyrr.matrix44.multiply(model, model_pos)
         glUniformMatrix4fv(model_loc, 1, GL_FALSE, triangle_model)
-        glDrawArrays(GL_TRIANGLES, 0, 326835)
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, len(m_model)*3)
 
         glfw.poll_events()
 
