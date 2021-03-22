@@ -93,7 +93,11 @@ def glfw_test_github():
         raise Exception('glfw windows can not be created!')
 
     glfw.set_window_pos(window, 280, 140)
+    glfw.set_input_mode(window, glfw.STICKY_KEYS, glfw.TRUE)
     glfw.set_window_size_callback(window, window_resize)
+    glfw.set_mouse_button_callback(window, mouse_button_callback)
+    glfw.set_key_callback(window, key_callback)
+
     glfw.make_context_current(window)
 
     glClearColor(0.3, 0.5, 0.5, 1)
@@ -176,7 +180,6 @@ def glfw_test_github():
         glDrawArrays(GL_TRIANGLES, 0, len(m_model) * 3)  # 每个网格三个顶点
 
         glfw.poll_events()
-        print(glfw.get_cursor_pos(window))
 
     glfw.terminate()
 
@@ -186,6 +189,30 @@ def window_resize(windows, width, height):
     窗口调整大小
     """
     glViewport(0, 0, width, height)
+
+
+# action：动作GLFW_PRESS, GLFW_RELEASE or GLFW_REPEAT.
+# mods： 辅助键ALT，CTRL，SHIFT，META等
+def mouse_button_callback(window, button, action, mods):
+    if button == glfw.MOUSE_BUTTON_LEFT and action == glfw.PRESS:
+        print(f'鼠标左键：{glfw.get_cursor_pos(window)}')
+    elif button == glfw.MOUSE_BUTTON_LEFT and action == glfw.RELEASE:
+        print('鼠标抬起')
+
+
+def key_callback(windows, key, scancode, action, mods):
+    if key == glfw.KEY_SPACE and action == glfw.REPEAT:
+        print(f'空格键持续按下')
+    if key == glfw.KEY_SPACE and action == glfw.PRESS:
+        print(f'空格键只按了一次')
+    if key == glfw.KEY_SPACE and action == glfw.RELEASE:
+        print(f'空格键抬起')
+
+    if key == glfw.KEY_SPACE and action == glfw.REPEAT and mods == glfw.MOD_CONTROL:
+        print(f'按下alt键和空格')
+
+    if key == glfw.KEY_ESCAPE:
+        glfw.set_window_should_close(windows, True)
 
 
 if __name__ == "__main__":

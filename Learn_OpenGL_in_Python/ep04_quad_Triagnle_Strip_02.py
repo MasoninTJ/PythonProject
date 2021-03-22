@@ -11,7 +11,7 @@ from OpenGL.GL.shaders import compileProgram, compileShader
 
 def window_resize(window, width, height):
     """
-    窗口调整大小
+    窗口调整大小，这里其实是重载的glfw的回调函数，glfw的回调函数是三个参数，因此这里也必须是三个参数
     """
     # glViewport —— set the viewport 设置视口
     # x, y —— Specify the lower left corner of the viewport rectangle, in pixels. The initial value is (0,0).
