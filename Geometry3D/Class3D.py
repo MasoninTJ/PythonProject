@@ -291,7 +291,17 @@ class Plane:
         self.normal = deepcopy(m_vector.normalize())
 
     def __str__(self):
-        return f'point:{self.point},normal:{self.normal}'
+        return f'point:{self.point}, normal:{self.normal}'
+
+
+class Circle:
+    def __init__(self, m_center=Point3D(), m_radius=1, m_vector=Vector3D(0, 0, 1)):
+        self.center = deepcopy(m_center)
+        self.radius = m_radius
+        self.normal = deepcopy(m_vector.normalize())
+
+    def __str__(self):
+        return f'center:{self.center}, radius:{self.radius}, normal:{self.normal}'
 
 
 class Sphere:
