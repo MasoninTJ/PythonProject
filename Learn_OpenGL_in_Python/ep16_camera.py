@@ -177,8 +177,8 @@ def glfw_test_github():
         glBindVertexArray(VAO)
         triangle_model = pyrr.matrix44.multiply(model, model_pos)
         glUniformMatrix4fv(model_loc, 1, GL_FALSE, triangle_model)
-        glDrawArrays(GL_TRIANGLES, 0, len(m_model) * 3)  # 每个网格三个顶点
-
+        # glDrawArrays(GL_TRIANGLES, 0, len(m_model) * 3)  # 每个网格三个顶点
+        glDrawArrays(GL_LINES, 0, len(m_model) * 3)  # 每个网格三个顶点
         glfw.poll_events()
 
     glfw.terminate()
@@ -195,24 +195,22 @@ def window_resize(windows, width, height):
 # mods： 辅助键ALT，CTRL，SHIFT，META等
 def mouse_button_callback(window, button, action, mods):
     if button == glfw.MOUSE_BUTTON_LEFT and action == glfw.PRESS:
-        print(f'鼠标左键：{glfw.get_cursor_pos(window)}')
-    elif button == glfw.MOUSE_BUTTON_LEFT and action == glfw.RELEASE:
-        print('鼠标抬起')
+        print(f'鼠标左键按下：{glfw.get_cursor_pos(window)}')
+    if button == glfw.MOUSE_BUTTON_LEFT and action == glfw.RELEASE:
+        print(f'鼠标左键抬起：{glfw.get_cursor_pos(window)}')
+    if button == glfw.MOUSE_BUTTON_MIDDLE and action == glfw.PRESS:
+        print(f'鼠标中键按下：{glfw.get_cursor_pos(window)}')
+    if button == glfw.MOUSE_BUTTON_MIDDLE and action == glfw.RELEASE:
+        print(f'鼠标中键抬起：{glfw.get_cursor_pos(window)}')
 
 
 def key_callback(windows, key, scancode, action, mods):
     if key == glfw.KEY_SPACE and action == glfw.REPEAT:
-        print(f'空格键持续按下')
+        print(f'空格键持续按下')  # 自动旋转功能
     if key == glfw.KEY_SPACE and action == glfw.PRESS:
-        print(f'空格键只按了一次')
-    if key == glfw.KEY_SPACE and action == glfw.RELEASE:
-        print(f'空格键抬起')
-
-    if key == glfw.KEY_SPACE and action == glfw.REPEAT and mods == glfw.MOD_CONTROL:
-        print(f'按下alt键和空格')
-
+        print(f'按下空格键')  # 恢复默认视角
     if key == glfw.KEY_ESCAPE:
-        glfw.set_window_should_close(windows, True)
+        glfw.set_window_should_close(windows, True)  # 关闭窗口
 
 
 if __name__ == "__main__":
