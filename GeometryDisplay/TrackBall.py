@@ -27,27 +27,29 @@ class TrackBall:
         return self.scale * matrix_center * self.translate * self.rotate * matrix_minus_center
 
 
-def draw_sphere_coin(m_sphere_radius=0.3):
+def draw_sphere_icon(m_sphere_radius=0.3):
     # 绘制轨迹球的动画
     glEnable(GL_LINE_SMOOTH)  # 开启平滑
-
     glPushMatrix()
 
-    red_color = (1, 0, 0, 0)
+    red_color = (1, 0, 0, 1)
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, red_color)
     draw_circle(m_sphere_radius, m_color=red_color)
 
     glRotatef(90, 1, 0, 0)
-    green_color = (0, 1, 0, 0)
+    green_color = (0, 1, 0, 1)
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, green_color)
     draw_circle(m_sphere_radius, m_color=green_color)
 
     glRotatef(90, 0, 1, 0)
-    blue_color = (0, 0, 1, 0)
+    blue_color = (0, 0, 1, 1)
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, blue_color)
     draw_circle(m_sphere_radius, m_color=blue_color)
 
     glPopMatrix()
 
 
-def draw_circle(m_radius=1.0, m_circle_step=100, m_color=(0, 0, 1, 0)):
+def draw_circle(m_radius=1.0, m_circle_step=100, m_color=(0, 0, 1, 1)):
     """
     在(0,0)原点位置画一个圆
     :param m_radius:圆的半径

@@ -1,5 +1,6 @@
 import glfw
-from OpenGL.GL import *
+
+from GeometryDisplay.TrackBall import *
 
 
 def window_resize(windows, m_width, m_height):
@@ -52,7 +53,7 @@ def key_callback(windows, key, scancode, action, mods):
 
 
 class GLWindow:
-    def __init__(self, m_width=800, m_height=800, m_xpos=100, m_ypos=100, auto_size_pos=True):
+    def __init__(self, m_width=800, m_height=800, m_xpos=100, m_ypos=100, auto_size_pos=False):
         if not glfw.init():
             raise Exception('glfw can not be initialized !')
 
@@ -91,8 +92,12 @@ class GLWindow:
 
     def main_loop(self):
         while not glfw.window_should_close(self._win):
-            glfw.swap_buffers(self._win)
+            # 开始渲染
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+            draw_sphere_icon()
+
+            glfw.swap_buffers(self._win)
             glfw.poll_events()
 
         glfw.terminate()
