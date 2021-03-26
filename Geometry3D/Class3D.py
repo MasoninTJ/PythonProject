@@ -404,3 +404,13 @@ class Box3D:
             self.min.y, self.max.y = self.max.y, self.min.y
         if self.min.z > self.max.z:
             self.min.z, self.max.z = self.max.z, self.min.z
+
+    @staticmethod
+    def from_triangle(m_triangle: Triangle):
+        m_min_x = min([m_triangle.vertex1.x, m_triangle.vertex2.x, m_triangle.vertex3.x])
+        m_max_x = max([m_triangle.vertex1.x, m_triangle.vertex2.x, m_triangle.vertex3.x])
+        m_min_y = min([m_triangle.vertex1.y, m_triangle.vertex2.y, m_triangle.vertex3.y])
+        m_max_y = max([m_triangle.vertex1.y, m_triangle.vertex2.y, m_triangle.vertex3.y])
+        m_min_z = min([m_triangle.vertex1.z, m_triangle.vertex2.z, m_triangle.vertex3.z])
+        m_max_z = max([m_triangle.vertex1.z, m_triangle.vertex2.z, m_triangle.vertex3.z])
+        return Box3D(Point3D(m_min_x, m_min_y, m_min_z), Point3D(m_max_x, m_max_y, m_max_z))
