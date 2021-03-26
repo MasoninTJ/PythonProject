@@ -348,9 +348,6 @@ def intersection_of_ray_and_model(m_ray: Ray3D, m_model: STLModel):
 # endregion
 
 
-
-
-
 # region
 # endregion
 
