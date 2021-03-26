@@ -268,6 +268,27 @@ def check_point_in_triangle_from_z(m_point: Point3D, m_triangle: Triangle):
         return False
 
 
+def check_intersect_ray_and_sphere(m_ray: Ray3D, m_sphere: Sphere):
+    """
+    检测射线与球是否相交，不计算交点
+    :param m_ray:
+    :param m_sphere:
+    :return:
+    """
+    a = m_sphere.center - m_ray.origin
+    a2 = dot(a, a)
+    r2 = m_sphere.radius ** 2
+    if a2 <= r2:
+        return True
+    l = dot(m_ray.direction, a)
+    if l < 0:
+        return False
+    m2 = a2 - l ** 2
+    if m2 > r2:
+        return False
+    return True
+
+
 # endregion
 
 # region 计算相交
@@ -345,10 +366,59 @@ def intersection_of_ray_and_model(m_ray: Ray3D, m_model: STLModel):
     return None
 
 
-# endregion
+def intersection_of_ray_and_sphere(m_ray: Ray3D, m_sphere: Sphere):
+    """
+    计算射线与球的交点 todo
+    :param m_ray:
+    :param m_sphere:
+    :return:
+    """
+    e = m_ray.origin - m_sphere.center
+    b = dot(m_ray.direction, e)
+    c = dot(e, e) - m_sphere.radius ** 2
+    k = b ** 2 - c
+    if k < 0:
+        return None
+    elif k == 0:
+        a = dot(m_ray.direction, m_ray.direction)
+        t = -b / a
+        Q = m_ray.get_point_from_t(t)
+        return Q
+    else:
+        k = k ** 0.5
+        a = dot(m_ray.direction, m_ray.direction)
+        t1 = (-b - k) / a
+        t2 = (-b + k) / a
+        Q1 = m_ray.get_point_from_t(t1)
+        Q2 = m_ray.get_point_from_t(t2)
+        return Q1, Q2
 
 
-# region
+def intersection_of_ray_and_sphere_accelerate(m_ray: Ray3D, m_sphere: Sphere):
+    """
+    计算射线与球的交点，优化算法 todo
+    只计算第一个交点
+    :param m_ray:
+    :param m_sphere:
+    :return:
+    """
+    a = m_sphere.center - m_ray.origin
+    l = dot(m_ray.direction, a)
+    a2 = dot(a, a)
+    r2 = m_sphere.radius ** 2
+    if a2 > r2 and l < 0:
+        return None
+    m2 = a2 - l ** 2
+    if m2 > r2:
+        return None
+    q = (r2 - m2) ** 0.5
+    if a2 > r2:
+        t = l - q
+    else:
+        t = l + q
+    return m_ray.get_point_from_t(t)
+
+
 # endregion
 
 if __name__ == '__main__':
