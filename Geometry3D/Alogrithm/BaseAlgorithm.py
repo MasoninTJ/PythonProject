@@ -241,9 +241,9 @@ def check_point_in_polygon_from_z(m_point: Point3D, m_polygon: List[Point3D]):
 
 def check_point_in_triangle_from_z(m_point: Point3D, m_triangle: Triangle):
     """
-    判断平面上的点是否在三角形内
+    判断平面上的点是否在三角形内(同向法的变式，速度最快)
     算法原理使用向量的叉乘。假设三角形的三个点按照顺时针顺序为A,B,C
-    对于某一点P,求出三个向量PA，PB，PC
+    对于某一点P,求出三个二维向量PA，PB，PC
     t1 = PA * PB
     t2 = PB * PC
     t3 = PC * PA
@@ -254,9 +254,9 @@ def check_point_in_triangle_from_z(m_point: Point3D, m_triangle: Triangle):
     if not (m_box.min.x <= m_point.x <= m_box.max.x and m_box.min.y <= m_point.y <= m_box.max.y):
         return False
 
-    pa = m_triangle.vertex1 - m_point
-    pb = m_triangle.vertex2 - m_point
-    pc = m_triangle.vertex3 - m_point
+    pa = Vector2D(m_triangle.vertex1.x - m_point.x, m_triangle.vertex1.y - m_point.y)
+    pb = Vector2D(m_triangle.vertex2.x - m_point.x, m_triangle.vertex2.y - m_point.y)
+    pc = Vector2D(m_triangle.vertex3.x - m_point.x, m_triangle.vertex3.y - m_point.y)
     t1 = cross(pa, pb)
     t2 = cross(pb, pc)
     t3 = cross(pc, pa)
@@ -266,6 +266,28 @@ def check_point_in_triangle_from_z(m_point: Point3D, m_triangle: Triangle):
         return True
     else:
         return False
+
+
+def check_point_in_triangle_from_z_gravity(m_point: Point3D, m_triangle: Triangle):
+    """
+    判断平面上的点是否在三角形内(重心法)
+    """
+    m_box = Box3D.from_triangle(m_triangle)
+    if not (m_box.min.x <= m_point.x <= m_box.max.x and m_box.min.y <= m_point.y <= m_box.max.y):
+        return False
+
+    ab = Vector2D(m_triangle.vertex2.x - m_triangle.vertex1.x, m_triangle.vertex2.y - m_triangle.vertex1.y)
+    ac = Vector2D(m_triangle.vertex3.x - m_triangle.vertex1.x, m_triangle.vertex3.y - m_triangle.vertex1.y)
+    ap = Vector2D(m_point.x - m_triangle.vertex1.x, m_point.y - m_triangle.vertex1.y)
+    ac_ac = dot(ac, ac)
+    ac_ab = dot(ac, ab)
+    ac_ap = dot(ac, ap)
+    ab_ab = dot(ab, ab)
+    ab_ap = dot(ab, ap)
+    numerator = 1 / (ac_ac * ab_ab - ac_ab * ac_ab)
+    u = (ab_ab * ac_ap - ac_ab * ab_ap) * numerator
+    v = (ac_ac * ab_ap - ac_ab * ac_ap) * numerator
+    return (u >= 0) and (v >= 0) and (u + v <= 1)
 
 
 def check_intersect_ray_and_sphere(m_ray: Ray3D, m_sphere: Sphere):
@@ -422,4 +444,10 @@ def intersection_of_ray_and_sphere_accelerate(m_ray: Ray3D, m_sphere: Sphere):
 # endregion
 
 if __name__ == '__main__':
-    pass
+    t_point = Point3D(2, 3, 3)
+    t_vertex_1 = Point3D(0, 5, 3)
+    t_vertex_2 = Point3D(-4, 0, 0)
+    t_vertex_3 = Point3D(3, 0, 2)
+    t_triagnle = Triangle(t_vertex_1, t_vertex_2, t_vertex_3)
+    t_bool = check_point_in_triangle_from_z_gravity(t_point, t_triagnle)
+    print(t_bool)
