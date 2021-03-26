@@ -27,7 +27,7 @@ def load_ascii_scatter_point(m_path: str):
 
 def load_ascii_sparse_array_point(m_path: str, with_intensity: bool = False):
     """
-    读取ascii稀疏阵列文件
+    读取ascii稀疏阵列文件,包含光强和无光强
     """
     point_length = 4 if with_intensity else 3  # 含有光强值的点长度为4
     m_split_char = ',| |;|\t'  # 分隔符，支持逗号|分号|空格|Tab
@@ -51,15 +51,9 @@ def load_ascii_sparse_array_point(m_path: str, with_intensity: bool = False):
 def load_ascii_dense_array_point(m_path):
     """
     读取ascii密集阵列文件
+    todo
     """
-    m_split_char = ',| |;|\t'  # 分隔符，支持逗号|分号|空格|Tab
-    m_point_list = []
-    with open(m_path, 'r') as m_point_file:
-        for m_string in m_point_file.readlines():
-            m_string_split = re.split(m_split_char, m_string)
-            m_point = map(float, m_string_split)
-            m_point_list.append(Point3D(*m_point))
-    return m_point_list
+    pass
 
 
 if __name__ == '__main__':
