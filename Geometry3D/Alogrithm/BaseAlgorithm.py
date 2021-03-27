@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 import ConstMember
 from Class3D import *
@@ -293,19 +293,16 @@ def check_point_in_triangle_from_z_gravity(m_point: Point3D, m_triangle: Triangl
 def check_intersect_ray_and_sphere(m_ray: Ray3D, m_sphere: Sphere):
     """
     检测射线与球是否相交，不计算交点
-    :param m_ray:
-    :param m_sphere:
-    :return:
     """
     a = m_sphere.center - m_ray.origin
     a2 = dot(a, a)
     r2 = m_sphere.radius ** 2
     if a2 <= r2:
         return True
-    l = dot(m_ray.direction, a)
-    if l < 0:
+    ll = dot(m_ray.direction, a)
+    if ll < 0:
         return False
-    m2 = a2 - l ** 2
+    m2 = a2 - ll ** 2
     if m2 > r2:
         return False
     return True
@@ -337,11 +334,11 @@ def intersection_of_ray_and_triangle(m_ray: Ray3D, m_triangle: Triangle) -> (Poi
     if -ConstMember.epsilon5 < a < ConstMember.epsilon5:  # 判断平行,使用小于极小值
         return None
     f = 1 / a
-    s = m_ray.origin - m_triangle.vertex1
-    u = f * dot(s, p)
+    ss = m_ray.origin - m_triangle.vertex1
+    u = f * dot(ss, p)
     if u < 0:  # 点在三角形外
         return None
-    q = cross(s, vec_ab)
+    q = cross(ss, vec_ab)
     v = f * dot(m_ray.direction, q)
     if v < 0 or u + v > 1:  # 点在三角形外
         return None
@@ -350,7 +347,7 @@ def intersection_of_ray_and_triangle(m_ray: Ray3D, m_triangle: Triangle) -> (Poi
     return m_ray.get_point_from_t(t)
 
 
-def intersection_of_ray_and_mesh(m_ray, m_mesh):
+def intersection_of_ray_and_mesh(m_ray: Ray3D, m_mesh: Mesh):
     """
     射线的方向为(0,0,-1),与三角面片计算交点
     """
@@ -388,9 +385,9 @@ def intersection_of_ray_and_model(m_ray: Ray3D, m_model: STLModel):
     return None
 
 
-def intersection_of_ray_and_sphere(m_ray: Ray3D, m_sphere: Sphere):
+def intersection_of_ray_and_sphere_equation(m_ray: Ray3D, m_sphere: Sphere) -> (None, Tuple[Point3D]):
     """
-    计算射线与球的交点 todo
+    计算射线与球的交点(解方程法)
     :param m_ray:
     :param m_sphere:
     :return:
@@ -398,56 +395,53 @@ def intersection_of_ray_and_sphere(m_ray: Ray3D, m_sphere: Sphere):
     e = m_ray.origin - m_sphere.center
     b = dot(m_ray.direction, e)
     c = dot(e, e) - m_sphere.radius ** 2
-    k = b ** 2 - c
-    if k < 0:
+    delta = b ** 2 - c
+    if delta < 0:
         return None
-    elif k == 0:
+    elif delta == 0:
         a = dot(m_ray.direction, m_ray.direction)
         t = -b / a
-        Q = m_ray.get_point_from_t(t)
-        return Q
+        return m_ray.get_point_from_t(t),  # 这里必须有个逗号，返回元组
     else:
-        k = k ** 0.5
+        k = delta ** 0.5
         a = dot(m_ray.direction, m_ray.direction)
         t1 = (-b - k) / a
         t2 = (-b + k) / a
-        Q1 = m_ray.get_point_from_t(t1)
-        Q2 = m_ray.get_point_from_t(t2)
-        return Q1, Q2
+        return m_ray.get_point_from_t(t1), m_ray.get_point_from_t(t2)
 
 
-def intersection_of_ray_and_sphere_accelerate(m_ray: Ray3D, m_sphere: Sphere):
+def intersection_of_ray_and_sphere(m_ray: Ray3D, m_sphere: Sphere) -> (None, Point3D):
     """
-    计算射线与球的交点，优化算法 todo
-    只计算第一个交点
+    计算射线与球的交点，优化算法，这里只计算第一个交点
     :param m_ray:
     :param m_sphere:
     :return:
     """
     a = m_sphere.center - m_ray.origin
-    l = dot(m_ray.direction, a)
+    ll = dot(m_ray.direction, a)
     a2 = dot(a, a)
     r2 = m_sphere.radius ** 2
-    if a2 > r2 and l < 0:
+    if a2 > r2 and ll < 0:
         return None
-    m2 = a2 - l ** 2
+    m2 = a2 - ll ** 2
     if m2 > r2:
         return None
     q = (r2 - m2) ** 0.5
     if a2 > r2:
-        t = l - q
+        t = ll - q
     else:
-        t = l + q
+        t = ll + q
     return m_ray.get_point_from_t(t)
 
 
 # endregion
 
 if __name__ == '__main__':
-    t_point = Point3D(2, 3, 3)
-    t_vertex_1 = Point3D(0, 5, 3)
-    t_vertex_2 = Point3D(-4, 0, 0)
-    t_vertex_3 = Point3D(3, 0, 2)
-    t_triagnle = Triangle(t_vertex_1, t_vertex_2, t_vertex_3)
-    t_bool = check_point_in_triangle_from_z_gravity(t_point, t_triagnle)
-    print(t_bool)
+    C = Point3D(0, -4, 0)
+    D = Point3D(3, 3, -2)
+    n = (D - C).normalize()
+    r = Ray3D(C, n)
+    s = Sphere(Point3D(0, 0, 0), 2)
+
+    iii = intersection_of_ray_and_sphere(r, s)
+    print(iii)

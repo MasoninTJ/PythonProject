@@ -205,7 +205,7 @@ class Vector3D:
         @return:
         """
         if isinstance(other, (int, float)) and other:
-            return Vector3D(self.i * other, self.j * other, self.k * other)
+            return Vector3D(self.i / other, self.j / other, self.k / other)
         else:
             return None
 
