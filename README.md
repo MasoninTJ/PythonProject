@@ -1,6 +1,7 @@
 # 3D平台软件
 
 随便写写，就当做是给过去的三年的一些总结
+
 一些文档可通过我的Blog获得
 https://www.yuque.com/zerosyujian/ucug9w
 
@@ -16,6 +17,8 @@ https://www.yuque.com/zerosyujian/ucug9w
   - [x] STL模型 `STLModel`
   - [x] 射线 `Ray3D`
   - [x] 包围盒 `BOX3D`
+  - [x] 球 `Sphere`
+  - [x] 圆 `Circle`
 - [x] 点云读取显示
 - [x] STL模型读取显示
 - [ ] 鼠标左键按下旋转，track ball
