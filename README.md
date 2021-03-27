@@ -1,6 +1,8 @@
 # 3D平台软件
 
 随便写写，就当做是给过去的三年的一些总结
+一些文档可通过我的Blog获得
+https://www.yuque.com/zerosyujian/ucug9w
 
 计划更新如下功能：
 

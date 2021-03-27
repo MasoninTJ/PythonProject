@@ -292,7 +292,7 @@ def check_point_in_triangle_from_z_gravity(m_point: Point3D, m_triangle: Triangl
 
 def check_intersect_ray_and_sphere(m_ray: Ray3D, m_sphere: Sphere):
     """
-    检测射线与球是否相交，不计算交点
+    只检测射线与球是否相交，不计算交点
     """
     a = m_sphere.center - m_ray.origin
     a2 = dot(a, a)
@@ -388,6 +388,8 @@ def intersection_of_ray_and_model(m_ray: Ray3D, m_model: STLModel):
 def intersection_of_ray_and_sphere_equation(m_ray: Ray3D, m_sphere: Sphere) -> (None, Tuple[Point3D]):
     """
     计算射线与球的交点(解方程法)
+    该方法其实是当做直线来算，最终输出的结果为一个元组或者一个None，
+    元组中可能包含一个点，两个点，一个None或者一点
     :param m_ray:
     :param m_sphere:
     :return:
@@ -437,11 +439,11 @@ def intersection_of_ray_and_sphere(m_ray: Ray3D, m_sphere: Sphere) -> (None, Poi
 # endregion
 
 if __name__ == '__main__':
-    C = Point3D(0, -4, 0)
-    D = Point3D(3, 3, -2)
+    C = Point3D(0, -2.1, 0)
+    D = Point3D(0, 2, 0)
     n = (D - C).normalize()
     r = Ray3D(C, n)
     s = Sphere(Point3D(0, 0, 0), 2)
 
-    iii = intersection_of_ray_and_sphere(r, s)
+    iii = check_intersect_ray_and_sphere(r, s)
     print(iii)
