@@ -2,6 +2,9 @@ import glfw
 
 from GeometryDisplay.TrackBall import *
 
+track_ball = TrackBall()
+rotate_matrix = None
+
 
 def window_resize(windows, m_width, m_height):
     """
@@ -23,14 +26,31 @@ def mouse_button_callback(window, button, action, mods):
     :param mods:粘滞键
     :return:
     """
+    global rotate_matrix
+    b_left_button_down = False
+    m_begin_point = ()
     if button == glfw.MOUSE_BUTTON_LEFT and action == glfw.PRESS:
-        print(f'鼠标左键按下：{glfw.get_cursor_pos(window)}')
+        # 鼠标左键按下，返回相对于窗口左上角的起始点坐标
+        b_left_button_down = True
+        m_begin_point = glfw.get_cursor_pos(window)
+        return m_begin_point
     if button == glfw.MOUSE_BUTTON_LEFT and action == glfw.RELEASE:
-        print(f'鼠标左键抬起：{glfw.get_cursor_pos(window)}')
+        # 鼠标左键抬起，返回相对于窗口左上角的结束点坐标
+        b_left_button_down = False
+        m_end_point = glfw.get_cursor_pos(window)
     if button == glfw.MOUSE_BUTTON_MIDDLE and action == glfw.PRESS:
         print(f'鼠标中键按下：{glfw.get_cursor_pos(window)}')
     if button == glfw.MOUSE_BUTTON_MIDDLE and action == glfw.RELEASE:
         print(f'鼠标中键抬起：{glfw.get_cursor_pos(window)}')
+
+    if b_left_button_down:
+        m_end_point = glfw.get_cursor_pos(window)
+        rotate_matrix = rotate_object(track_ball, m_begin_point, m_end_point)
+        m_begin_point = m_end_point
+
+
+def mouse_move_callback(window, xpos, ypos):
+    pass
 
 
 def key_callback(windows, key, scancode, action, mods):

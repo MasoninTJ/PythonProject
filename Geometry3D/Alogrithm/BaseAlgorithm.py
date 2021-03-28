@@ -57,6 +57,7 @@ def get_rotate_matrix_from_two_vector(m_vector_old: Vector3D, m_vector_new: Vect
     if m_theta <= ConstMember.epsilon5:
         return np.eye(3)
     m_axis = cross(m_vector_old, m_vector_new)
+    print(f'旋转角度：{m_theta},旋转轴：{m_axis}')
     return Matrix3d.from_axis_angle(m_axis, m_theta)
 
 
