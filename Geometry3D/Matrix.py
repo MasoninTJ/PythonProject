@@ -12,9 +12,9 @@ class Matrix3d:
         elif isinstance(other, Vector3D):
             return Vector3D(*np.dot(self._value, other.to_array()))
         elif isinstance(other, Matrix3d):
-            return Matrix3d(*np.dot(self._value, other._value))
+            return Matrix3d(np.dot(self._value, other._value))
         elif isinstance(other, np.ndarray):
-            return Matrix3d(*np.dot(self._value, other))
+            return Matrix3d(np.dot(self._value, other))
         else:
             return None
 
@@ -33,14 +33,14 @@ class Matrix3d:
         矩阵求逆
         :return:
         """
-        return np.linalg.inv(self._value)
+        return Matrix3d(np.linalg.inv(self._value))
 
     def transpose(self):
         """
         矩阵转置
         :return:
         """
-        return self._value.transpose()
+        return Matrix3d(self._value.transpose())
 
     @staticmethod
     def identity():
@@ -48,7 +48,7 @@ class Matrix3d:
         返回单位矩阵
         :return:
         """
-        return np.identity(3)
+        return Matrix3d(np.identity(3))
 
     @staticmethod
     def zeros():
@@ -56,7 +56,7 @@ class Matrix3d:
         返回零矩阵
         :return:
         """
-        return np.zeros(shape=(3, 3))
+        return Matrix3d(np.zeros(shape=(3, 3)))
 
     @staticmethod
     def from_euler_angle(m_euler_x_rad: (float, int), m_euler_y_rad: (float, int), m_euler_z_rad: (float, int)):
@@ -105,9 +105,9 @@ class Matrix4d:
             m_k = other.i * m_matrix[2, 0] + other.j * m_matrix[2, 1] + other.k * m_matrix[2, 2]
             return Vector3D(m_i, m_j, m_k)
         elif isinstance(other, Matrix4d):
-            return Matrix4d(*np.dot(self._value, other._value))
+            return Matrix4d(np.dot(self._value, other._value))
         elif isinstance(other, np.ndarray):
-            return Matrix4d(*np.dot(self._value, other))
+            return Matrix4d(np.dot(self._value, other))
         else:
             return None
 
@@ -126,14 +126,14 @@ class Matrix4d:
         矩阵求逆
         :return:
         """
-        return np.linalg.inv(self._value)
+        return Matrix4d(np.linalg.inv(self._value))
 
     def transpose(self):
         """
         矩阵转置
         :return:
         """
-        return self._value.transpose()
+        return Matrix4d(self._value.transpose())
 
     @staticmethod
     def identity():
@@ -141,7 +141,7 @@ class Matrix4d:
         返回单位矩阵
         :return:
         """
-        return np.identity(4)
+        return Matrix4d(np.identity(4))
 
     @staticmethod
     def zeros():
@@ -149,7 +149,7 @@ class Matrix4d:
         返回零矩阵
         :return:
         """
-        return np.zeros(shape=(4, 4))
+        return Matrix4d(np.zeros(shape=(4, 4)))
 
     @staticmethod
     def from_rotate(m_rotate_matrix: Matrix3d):
@@ -160,10 +160,10 @@ class Matrix4d:
         """
         m_matrix = Matrix4d.identity()
         # pycharm会报提示，因为用了_value，使用正常
-        m_matrix[0, :] = *m_rotate_matrix._value[0, :], 0
-        m_matrix[1, :] = *m_rotate_matrix._value[1, :], 0
-        m_matrix[2, :] = *m_rotate_matrix._value[2, :], 0
-        m_matrix[3, :] = 0, 0, 0, 1
+        m_matrix._value[0, :] = *m_rotate_matrix._value[0, :], 0
+        m_matrix._value[1, :] = *m_rotate_matrix._value[1, :], 0
+        m_matrix._value[2, :] = *m_rotate_matrix._value[2, :], 0
+        m_matrix._value[3, :] = 0, 0, 0, 1
         return m_matrix
 
     @staticmethod
@@ -174,7 +174,8 @@ class Matrix4d:
         :return:
         """
         m_matrix = Matrix4d.identity()
-        m_matrix[0:3, 3] = m_translation.to_array()
+        # pycharm会报提示，因为用了_value，使用正常
+        m_matrix._value[0:3, 3] = m_translation.to_array()
         return m_matrix
 
     @staticmethod
@@ -192,9 +193,8 @@ if __name__ == '__main__':
     matrix = Matrix3d([[1.000000e+00, 0.000000e+00, 0.000000e+00],
                        [0.000000e+00, 6.123234e-17, 1.000000e+00],
                        [-0.000000e+00, -1.000000e+00, 6.123234e-17]])
+    print(type(matrix))
 
-    print(Matrix4d.from_rotate(matrix))
-
-    print(Matrix4d.from_translation(Vector3D(1, 2, 3)))
-
-    print(Matrix4d.from_scale(2))
+    matrix = Matrix3d.identity()
+    print(type(matrix))
+    print(Matrix4d.from_translation(Vector3D(1,1,1)))

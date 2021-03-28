@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import numpy as np
 from OpenGL.GL import *
 
@@ -14,10 +12,10 @@ class TrackBall:
         self.radius = m_radius
 
         self.rotate = Matrix4d.identity()
-        self.translate = Matrix4d.from_translation(Vector3D(0, 0, 0))
-        self.scale = Matrix4d.from_scale(1)
+        self.translate = Matrix4d.identity()
+        self.scale = Matrix4d.identity()
 
-    def update_track_ball(self, m_rotate_matrix, m_translate_matrix, m_scale_matrix):
+    def update_track_ball(self, m_rotate_matrix=Matrix4d.identity(), m_translate_matrix=Matrix4d.identity(), m_scale_matrix=Matrix4d.identity()):
         self.rotate *= m_rotate_matrix
         self.translate *= m_translate_matrix
         self.scale *= m_scale_matrix
@@ -83,8 +81,10 @@ def draw_circle(m_radius=1.0, m_circle_step=100, m_color=(0, 0, 1, 1)):
 
 def rotate_object(m_track_ball: TrackBall, m_begin_point, m_end_point):
     m_sphere = Sphere(m_track_ball.center, m_track_ball.radius)
-    m_begin_point = Point3D(*m_begin_point, m_track_ball.radius)
-    m_end_point = Point3D(*m_end_point, m_track_ball.radius)
+    m_begin_point_x, m_begin_point_y = m_begin_point
+    m_end_point_x, m_end_point_y = m_end_point
+    m_begin_point = Point3D(m_begin_point_x - 400, m_begin_point_y - 400, m_track_ball.radius)
+    m_end_point = Point3D(m_end_point_x - 400, m_end_point_y - 400, m_track_ball.radius)
     m_begin_ray = Ray3D(m_begin_point, Vector3D(0, 0, -1))
     m_end_ray = Ray3D(m_end_point, Vector3D(0, 0, -1))
     m_begin_point = intersection_of_ray_and_sphere(m_begin_ray, m_sphere)

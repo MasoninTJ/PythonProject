@@ -1,7 +1,7 @@
 from typing import List, Tuple
 
 import ConstMember
-from Class3D import *
+from Geometry3D.Class3D import *
 from Matrix import Matrix3d
 
 
@@ -55,7 +55,7 @@ def get_rotate_matrix_from_two_vector(m_vector_old: Vector3D, m_vector_new: Vect
     """
     m_theta = np.arccos(dot(m_vector_old, m_vector_new) / (m_vector_old.length() * m_vector_new.length()))
     if m_theta <= ConstMember.epsilon5:
-        return np.eye(3)
+        return Matrix3d.identity()
     m_axis = cross(m_vector_old, m_vector_new)
     print(f'旋转角度：{m_theta},旋转轴：{m_axis}')
     return Matrix3d.from_axis_angle(m_axis, m_theta)
@@ -440,11 +440,5 @@ def intersection_of_ray_and_sphere(m_ray: Ray3D, m_sphere: Sphere) -> (None, Poi
 # endregion
 
 if __name__ == '__main__':
-    C = Point3D(0, -2.1, 0)
-    D = Point3D(0, 2, 0)
-    n = (D - C).normalize()
-    r = Ray3D(C, n)
-    s = Sphere(Point3D(0, 0, 0), 2)
-
-    iii = check_intersect_ray_and_sphere(r, s)
-    print(iii)
+    t_vector_1 = Vector3D(-400,-400,0)
+    print(isinstance(t_vector_1,Vector3D))

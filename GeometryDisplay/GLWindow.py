@@ -1,9 +1,16 @@
 import glfw
+import pyrr
+from OpenGL.GL.shaders import compileProgram, compileShader
 
+from Alogrithm.LoadMesh import load_stl_model
+from Class3D import STLModel
 from GeometryDisplay.TrackBall import *
 
 track_ball = TrackBall()
-rotate_matrix = None
+rotate_matrix = pyrr.matrix44.create_identity()
+scale_matrix = pyrr.matrix44.create_from_scale(pyrr.Vector3([2, 2, 2]))  # 这里缩放，好像是数字越小，物体也越小
+view_matrix = pyrr.matrix44.create_look_at(pyrr.Vector3([0, 0, 3]), pyrr.Vector3([0, 0, 0]), pyrr.Vector3([0, 1, 0]))
+projection_matrix = pyrr.matrix44.create_orthogonal_projection_matrix(0, 800, 0, 800, -1000, 1000)
 
 
 def window_resize(windows, m_width, m_height):
@@ -15,6 +22,7 @@ def window_resize(windows, m_width, m_height):
     :return:
     """
     glViewport(0, 0, m_width, m_height)
+    track_ball.resize_track_ball(m_width, m_height)
 
 
 def mouse_button_callback(window, button, action, mods):
@@ -28,12 +36,12 @@ def mouse_button_callback(window, button, action, mods):
     """
     global rotate_matrix
     b_left_button_down = False
-    m_begin_point = ()
+    m_begin_point = (0, 0)
+    m_end_point= (0,0)
     if button == glfw.MOUSE_BUTTON_LEFT and action == glfw.PRESS:
         # 鼠标左键按下，返回相对于窗口左上角的起始点坐标
         b_left_button_down = True
         m_begin_point = glfw.get_cursor_pos(window)
-        return m_begin_point
     if button == glfw.MOUSE_BUTTON_LEFT and action == glfw.RELEASE:
         # 鼠标左键抬起，返回相对于窗口左上角的结束点坐标
         b_left_button_down = False
@@ -44,13 +52,11 @@ def mouse_button_callback(window, button, action, mods):
         print(f'鼠标中键抬起：{glfw.get_cursor_pos(window)}')
 
     if b_left_button_down:
-        m_end_point = glfw.get_cursor_pos(window)
+        print(m_begin_point, m_end_point)
         rotate_matrix = rotate_object(track_ball, m_begin_point, m_end_point)
+        rotate_matrix = Matrix4d.from_rotate(rotate_matrix)
+        track_ball.update_track_ball(m_rotate_matrix=rotate_matrix)
         m_begin_point = m_end_point
-
-
-def mouse_move_callback(window, xpos, ypos):
-    pass
 
 
 def key_callback(windows, key, scancode, action, mods):
@@ -89,6 +95,7 @@ class GLWindow:
             m_ypos = m_scense_height // 4
 
         self._win = glfw.create_window(m_width, m_height, 'PyOpenGL Display Window', None, None)
+        track_ball.resize_track_ball(m_width, m_height)
 
         if not self._win:
             glfw.terminate()
@@ -110,12 +117,76 @@ class GLWindow:
         glEnable(GL_BLEND)  # 启用混合
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)  # 定义混合因子
 
+        # 顶点着色器与片段着色器
+        m_vertex_src_path = './OpenGL_Vertex_Src'
+        m_fragment_src_path = './OpenGL_Fragment_Src'
+        m_vertex_src = open(m_vertex_src_path, 'r', encoding='utf-8').read()
+        m_fragment_src = open(m_fragment_src_path, 'r', encoding='utf-8').read()
+        shader = compileProgram(compileShader(m_vertex_src, GL_VERTEX_SHADER), compileShader(m_fragment_src, GL_FRAGMENT_SHADER))
+        glUseProgram(shader)
+
+        # 读取stl文件，并转化为可以读取的列表形式
+        m_model_path = r'D:\下载\全局标定测试\单层NEY模型.stl'
+        self.m_model: STLModel = load_stl_model(m_model_path)
+        m_model_vertices = []
+        for m_mesh in self.m_model:
+            # [x,y,z,i,j,k,r,g,b 形式]
+            m_model_vertices.extend(m_mesh.vertex.vertex1.to_array())
+            m_model_vertices.extend(m_mesh.normal.to_array())
+            m_model_vertices.extend([1.0, 1.0, 0.0])
+            m_model_vertices.extend(m_mesh.vertex.vertex2.to_array())
+            m_model_vertices.extend(m_mesh.normal.to_array())
+            m_model_vertices.extend([1.0, 1.0, 0.0])
+            m_model_vertices.extend(m_mesh.vertex.vertex3.to_array())
+            m_model_vertices.extend(m_mesh.normal.to_array())
+            m_model_vertices.extend([1.0, 1.0, 0.0])
+        m_model_vertices = np.array(m_model_vertices, dtype=np.float32)
+        print(f'共{len(self.m_model) * 3}个顶点')
+
+        self.VAO = glGenVertexArrays(1)
+        self.VBO = glGenBuffers(1)
+
+        # model VAO
+        glBindVertexArray(self.VAO)
+
+        glBindBuffer(GL_ARRAY_BUFFER, self.VBO)
+        glBufferData(GL_ARRAY_BUFFER, m_model_vertices.nbytes, m_model_vertices, GL_STATIC_DRAW)
+
+        # 定义mesh顶点的读取方式
+        glEnableVertexAttribArray(0)
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, m_model_vertices.itemsize * 9, ctypes.c_void_p(0))
+        # 定义mesh法向量的读取方式
+        glEnableVertexAttribArray(1)
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, m_model_vertices.itemsize * 9, ctypes.c_void_p(m_model_vertices.itemsize * 3))
+        # 定义mesh颜色的读取方式
+        glEnableVertexAttribArray(2)
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, m_model_vertices.itemsize * 9, ctypes.c_void_p(m_model_vertices.itemsize * 6))
+
+        # model matrix
+        self.model_loc = glGetUniformLocation(shader, 'model')
+        self.model_pos = pyrr.matrix44.create_from_translation(pyrr.Vector3([400, 400, 0]))  # 模型位置
+
+        # view matrix
+        view_loc = glGetUniformLocation(shader, 'view')
+        glUniformMatrix4fv(view_loc, 1, GL_FALSE, view_matrix)
+
+        # projection matrix
+        proj_loc = glGetUniformLocation(shader, 'projection')
+        glUniformMatrix4fv(proj_loc, 1, GL_FALSE, projection_matrix)
+
     def main_loop(self):
         while not glfw.window_should_close(self._win):
             # 开始渲染
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
             draw_sphere_icon()
+
+            model_matrix = track_ball.result_matrix()  # trackBall 的旋转矩阵
+            # 绘制STL模型
+            glBindVertexArray(self.VAO)
+            model_matrix = pyrr.matrix44.multiply(model_matrix.to_array().reshape((4, 4)), self.model_pos)
+            glUniformMatrix4fv(self.model_loc, 1, GL_FALSE, model_matrix)
+            glDrawArrays(GL_TRIANGLES, 0, len(self.m_model) * 3)  # 每个网格三个顶点
 
             glfw.swap_buffers(self._win)
             glfw.poll_events()
