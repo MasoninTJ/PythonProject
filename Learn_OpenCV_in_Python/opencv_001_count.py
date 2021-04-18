@@ -1,16 +1,43 @@
-import cv2
+import cv2 as cv
+import numpy as np
 from matplotlib import pyplot as plt
+import time
 
 
-def plot_demo(image):
-    plt.hist(image.ravel(), 256, [0, 256])  # numpy的ravel函数功能是将多维数组降为一维数组
+def custom_hist(gray):
+    h, w = gray.shape
+    hist = np.zeros([256], dtype=np.int32)
+    for row in range(h):
+        for col in range(w):
+            pv = gray[row, col]
+            hist[pv] += 1
+
+    y_pos = np.arange(0, 256, 1, dtype=np.int32)
+    plt.bar(y_pos, hist, align='center', color='r', alpha=0.5)
+    plt.xticks(y_pos, y_pos)
+    plt.ylabel('Frequency')
+    plt.title('Histogram')
+
+    # plt.plot(hist, color='r')
+    # plt.xlim([0, 256])
     plt.show()
 
 
-img = cv2.imread('image/pic_0003.bmp', 0)
-# hist = cv2.calcHist(img, [0], None, 256, [0, 256])
+def image_hist(image):
+    cv.imshow("input", image)
+    color = ('blue', 'green', 'red')
+    for i, color in enumerate(color):
+        hist = cv.calcHist([image], [i], None, [256], [0, 256])
+        plt.plot(hist, color=color)
+        plt.xlim([0, 256])
+    plt.show()
 
-ret, th1 = cv2.threshold(img, 50, 255, cv2.THRESH_BINARY)
-plt.imshow(img, cmap='gray', interpolation='bicubic')
-plt.show()
-plot_demo(img)
+
+src = cv.imread("image/pic_0001.png")
+cv.namedWindow("input", cv.WINDOW_AUTOSIZE)
+gray = cv.cvtColor(src, cv.COLOR_BGR2GRAY)
+cv.imshow("input", gray)
+# custom_hist(gray)
+image_hist(src)
+cv.waitKey(0)
+cv.destroyAllWindows()
