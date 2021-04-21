@@ -15,6 +15,8 @@ class MyMainForm(QMainWindow, Ui_MainWindow):
 if __name__ == "__main__":
     # 固定的，PyQt5程序都需要QApplication对象。sys.argv是命令行参数列表，确保程序可以双击运行
     app = QApplication(sys.argv)
+    QApplication.setStyle('Fusion')
+
     # 初始化
     myWin = MyMainForm()
     # 将窗口控件显示在屏幕上

@@ -21,6 +21,8 @@ while True:
     k = cv.waitKey(1) & 0xFF
     if k == 27:
         break
+    elif k == ord('s'):
+        cv.imwrite('../Project001_ShakeAndCount/image_background.png', img)
     # 得到四条轨迹的当前位置
     r = cv.getTrackbarPos('R', 'image')
     g = cv.getTrackbarPos('G', 'image')
