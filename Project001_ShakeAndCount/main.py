@@ -91,7 +91,6 @@ class MyMainForm(QMainWindow, Ui_MainWindow):
         qt_image = QImage(current_test_image.data, current_test_image.shape[1], current_test_image.shape[0], QImage.Format_Grayscale8)
         # 将子窗口显示在屏幕上，并显示图片
         self.create_form.label.setPixmap(QPixmap.fromImage(qt_image))
-        self.create_form.scaled_image()
         self.create_form.show()
 
     def test_run(self):

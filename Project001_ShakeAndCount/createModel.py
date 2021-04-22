@@ -20,7 +20,6 @@ class Ui_set_roi_model(object):
         self.widget.setObjectName("widget")
         self.label = QtWidgets.QLabel(self.widget)
         self.label.setGeometry(QtCore.QRect(0, 0, 781, 521))
-        self.label.setScaledContents(True)
         self.label.setObjectName("label")
         self.button_ok = QtWidgets.QPushButton(set_roi_model)
         self.button_ok.setGeometry(QtCore.QRect(670, 540, 120, 50))
