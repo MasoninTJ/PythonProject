@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from custom.stackedWidget import StackedWidget
 from custom.treeView import FileSystemTreeView
 from custom.listWidgets import FuncListWidget, UsedListWidget
-from custom.graphicsView import GraphicsView
+from custom.GraphicsView import GraphicsView
 
 
 class MyApp(QMainWindow):
