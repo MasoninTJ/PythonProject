@@ -73,7 +73,7 @@ class MyApp(QMainWindow):
         self.src_img = img
         img = self.process_image()
         self.cur_img = img
-        self.graphicsView.change_image(img)
+        self.graphicsView.set_image(img)
 
     def process_image(self):
         img = self.src_img.copy()

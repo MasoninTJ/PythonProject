@@ -1,18 +1,26 @@
 from PyQt5.QtCore import Qt, QRectF, QPoint
 from PyQt5.QtGui import QPen
-from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem
+from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsItem
 
 
 class GraphicsRectItem(QGraphicsRectItem):
     """
     自定义矩形图元
     """
+
     def __init__(self):
         super(GraphicsRectItem, self).__init__()
         self.setPen(QPen(Qt.green))
         self.setRect(QRectF(0, 0, 100, 100))
         self.setPos(0, 0)
+        self.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsFocusable)
 
+        self.left_button_down = False
+        self.start_pos = QPoint()
+
+    def reset(self):
+        self.setRect(QRectF(0, 0, 100, 100))
+        self.setPos(0, 0)
         self.left_button_down = False
         self.start_pos = QPoint()
 
@@ -25,13 +33,14 @@ class GraphicsRectItem(QGraphicsRectItem):
         self.setCursor(Qt.CrossCursor)
         if event.delta() > 0:
             temp = self.rect()
-            temp.adjust(-5, -5, 5, 5)
+            temp.adjust(-5, -5, 5, 5)  # 这里调整的是图元坐标
             self.setRect(temp)
         elif event.delta() < 0:
             if self.rect().height() > 20 and self.rect().width() > 20:
                 temp = self.rect()
-                temp.adjust(5, 5, -5, -5)
+                temp.adjust(5, 5, -5, -5)  # 这里调整的是图元坐标
                 self.setRect(temp)
+        event=None
 
     def mousePressEvent(self, event) -> None:
         """
@@ -59,10 +68,16 @@ class GraphicsRectItem(QGraphicsRectItem):
         """
         self.left_button_down = False
 
-
 if __name__ == '__main__':
     import sys
     from PyQt5.QtWidgets import QApplication
+
+    """
+    获取图元左上角的scene坐标 self.mapToScene(self.rect().topLeft())
+    获取图元右下角的scene坐标 self.mapToScene(self.rect().bottomRight())
+    
+    在图元中调整的所有东西都是图元坐标，需要转换到场景坐标系中
+    """
 
     app = QApplication(sys.argv)
     view = QGraphicsView()
@@ -75,5 +90,4 @@ if __name__ == '__main__':
 
     view.setScene(scene)
     view.show()
-
     sys.exit(app.exec_())

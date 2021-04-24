@@ -1,7 +1,7 @@
-import cv2
+from GraphicsRectItem import GraphicsRectItem
 from PyQt5.QtCore import Qt, QRectF
 from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtWidgets import QGraphicsView, QGraphicsPixmapItem, QGraphicsScene, QFileDialog, QGraphicsRectItem, QGraphicsItem
+from PyQt5.QtWidgets import QGraphicsView, QGraphicsPixmapItem, QGraphicsScene, QFileDialog
 
 """
 重构PyQt5中QGraphicsView控件，用于显示opencv中的图片，支持放大缩小，平移，右键保存
@@ -15,10 +15,9 @@ class GraphicsView(QGraphicsView):
         self._zoom = 0  # 图片缩放量
         self._empty = True  # 是否包含图片
         self._image = QGraphicsPixmapItem()  # 设置图片
-        self._roi = QGraphicsRectItem()  # 设置ROI
-        self._roi.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)    # 设置ROI可以选择并拖动
+        self._roi = GraphicsRectItem()  # 设置ROI
 
-        self._roi.setRect(100, 30, 100, 30)
+        self._roi.setRect(0, 0, 100, 100)
 
         self._scene.addItem(self._image)
         self._scene.addItem(self._roi)
@@ -68,7 +67,7 @@ class GraphicsView(QGraphicsView):
         """
         return not self._empty
 
-    def change_image(self, img):
+    def set_image(self, img):
         """
         修改图片
         @param img:
@@ -111,19 +110,22 @@ class GraphicsView(QGraphicsView):
         @param event:
         @return:
         """
-        if self.has_photo():
-            if event.angleDelta().y() > 0:
-                factor = 1.25
-                self._zoom += 1
-            else:
-                factor = 0.8
-                self._zoom -= 1
-            if self._zoom > 0:
-                self.scale(factor, factor)
-            elif self._zoom == 0:
-                self.fitInView()
-            else:
-                self._zoom = 0
+        if self._roi.isUnderMouse():
+            super().wheelEvent(event)
+        else:
+            if self.has_photo():
+                if event.angleDelta().y() > 0:
+                    factor = 1.25
+                    self._zoom += 1
+                else:
+                    factor = 0.8
+                    self._zoom -= 1
+                if self._zoom > 0:
+                    self.scale(factor, factor)
+                elif self._zoom == 0:
+                    self.fitInView()
+                else:
+                    self._zoom = 0
 
 
 def img_to_pixmap(img_cv):
@@ -148,8 +150,11 @@ def img_to_pixmap(img_cv):
 if __name__ == '__main__':
     import sys
     from PyQt5.QtWidgets import QApplication
+    import cv2
 
     app = QApplication(sys.argv)
     graphics = GraphicsView()
+    test_image = cv2.imread(r'E:\Python Programma\PythonProject\Github_Code\opencv-pyqt5-master\custom\Snipaste_2021-04-24_12-12-19.jpg')
+    graphics.set_image(test_image)
     graphics.show()
     sys.exit(app.exec_())
