@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem, QG
 
 class GraphicsRectItem(QGraphicsRectItem):
     """
-    自定义矩形图元
+    自定义矩形图元，用于显示ROI，支持放大缩小，平移
     """
 
     def __init__(self):
@@ -40,7 +40,7 @@ class GraphicsRectItem(QGraphicsRectItem):
                 temp = self.rect()
                 temp.adjust(5, 5, -5, -5)  # 这里调整的是图元坐标
                 self.setRect(temp)
-        event=None
+        event = None
 
     def mousePressEvent(self, event) -> None:
         """
@@ -67,6 +67,7 @@ class GraphicsRectItem(QGraphicsRectItem):
         @return:
         """
         self.left_button_down = False
+
 
 if __name__ == '__main__':
     import sys

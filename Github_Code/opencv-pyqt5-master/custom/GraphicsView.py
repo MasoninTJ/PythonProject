@@ -1,14 +1,14 @@
-from GraphicsRectItem import GraphicsRectItem
 from PyQt5.QtCore import Qt, QRectF
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsPixmapItem, QGraphicsScene, QFileDialog
 
-"""
-重构PyQt5中QGraphicsView控件，用于显示opencv中的图片，支持放大缩小，平移，右键保存
-"""
+from GraphicsRectItem import GraphicsRectItem
 
 
 class GraphicsView(QGraphicsView):
+    """
+    自定义QGraphicsView控件，用于显示opencv中的图片，支持放大缩小，平移，右键保存（暂时屏蔽）
+    """
     def __init__(self, parent=None):
         super(GraphicsView, self).__init__(parent=parent)
         self._scene = QGraphicsScene(self)
@@ -134,6 +134,8 @@ def img_to_pixmap(img_cv):
     @param img_cv: opencv 中的图像
     @return:
     """
+    if img_cv is None:
+        return None
     if len(img_cv.shape) == 3:  # bgr图像
         img_cv = cv2.cvtColor(img_cv, cv2.COLOR_BGR2RGB)  # bgr -> rgb
         h, w, c = img_cv.shape
@@ -144,7 +146,7 @@ def img_to_pixmap(img_cv):
         image = QImage(img_cv, w, h, QImage.Format_Grayscale8)
         return QPixmap.fromImage(image)
     else:
-        pass
+        return None
 
 
 if __name__ == '__main__':
