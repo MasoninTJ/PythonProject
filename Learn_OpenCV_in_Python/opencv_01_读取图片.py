@@ -10,7 +10,7 @@ cv2.imshow()
 cv2.imwrite()
 """
 
-img = cv2.imread('C:/Users/ZerosZhang/Desktop/01_count_077_001.bmp', cv2.IMREAD_GRAYSCALE)
+img = cv2.imread('image/pic_0009.jpg', cv2.IMREAD_GRAYSCALE)
 print(img.shape)  # 图像尺寸
 cv2.namedWindow('image', cv2.WINDOW_NORMAL)
 cv2.imshow('image', img)
