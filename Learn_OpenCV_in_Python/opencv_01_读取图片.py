@@ -10,7 +10,7 @@ cv2.imshow()
 cv2.imwrite()
 """
 
-img = cv2.imread('image/pic_0009.jpg', cv2.IMREAD_GRAYSCALE)
+img = cv2.imread(r'C:\Users\ZerosZhang\Documents\PycharmCode\Learn_OpenCV_in_Python\image\pic_0010.jpg', cv2.IMREAD_GRAYSCALE)
 print(img.shape)  # 图像尺寸
 cv2.namedWindow('image', cv2.WINDOW_NORMAL)
 cv2.imshow('image', img)
